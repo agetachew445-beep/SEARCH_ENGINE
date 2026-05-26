@@ -1,0 +1,69 @@
+========================================
+  IMPORTANT: INSTALL PYTHON FIRST!
+========================================
+
+The error "127.0.0.1 refused to connect" means the server is not running.
+This is because Python is not installed on your computer.
+
+========================================
+  HOW TO INSTALL PYTHON
+========================================
+
+OPTION 1: Python.org (Recommended)
+-----------------------------------
+1. Go to: https://www.python.org/downloads/
+2. Click "Download Python 3.11.x" (or latest version)
+3. Run the installer
+4. ⚠️ IMPORTANT: Check the box "Add Python to PATH"
+5. Click "Install Now"
+6. Wait for installation to complete
+7. Restart your computer (recommended)
+
+OPTION 2: Microsoft Store (Easier)
+-----------------------------------
+1. Open Microsoft Store (search in Windows)
+2. Search for "Python 3.11"
+3. Click "Get" or "Install"
+4. Wait for installation to complete
+
+========================================
+  AFTER INSTALLING PYTHON
+========================================
+
+1. Close all Command Prompt/PowerShell windows
+2. Open a NEW Command Prompt
+3. Navigate to project folder:
+   cd C:\Users\Getachew\Desktop\IR
+
+4. Run the installation script:
+   check_and_install.bat
+
+5. After installation completes, run:
+   start_server.bat
+
+6. Open browser and go to:
+   http://127.0.0.1:8000/
+
+========================================
+  VERIFY PYTHON INSTALLATION
+========================================
+
+Open Command Prompt and type:
+  python --version
+
+You should see something like:
+  Python 3.11.x
+
+If you see an error, Python is not installed correctly.
+
+========================================
+  NEED HELP?
+========================================
+
+If you still have issues:
+1. Make sure Python is installed
+2. Make sure "Add to PATH" was checked
+3. Restart your computer
+4. Try running check_and_install.bat again
+
+========================================

@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">IR Search Engine</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: arial, sans-serif;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* ── TOP NAV ── */
+        .top-nav {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 10px 20px;
+            gap: 14px;
+        }
+        .top-nav a { font-size: 13px; color: #202124; text-decoration: none; }
+        .top-nav a:hover { text-decoration: underline; }
+        .btn-signin {
+            background: #1a73e8; color: #fff !important;
+            padding: 8px 18px; border-radius: 4px;
+            font-size: 14px; font-weight: 500; text-decoration: none !important;
+        }
+        .btn-signin:hover { background: #1765cc; }
+
+        /* ── MAIN ── */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-bottom: 80px;
+        }
+
+        /* ── LOGO ── */
+        .logo {
+            font-size: 80px;
+            font-weight: 400;
+            letter-spacing: -2px;
+            margin-bottom: 28px;
+            user-select: none;
+        }
+        .logo span:nth-child(1) { color: #4285F4; }
+        .logo span:nth-child(2) { color: #EA4335; }
+        .logo span:nth-child(3) { color: #FBBC05; }
+        .logo span:nth-child(4) { color: #4285F4; }
+        .logo span:nth-child(5) { color: #34A853; }
+        .logo span:nth-child(6) { color: #EA4335; }
+        .logo span:nth-child(7) { color: #4285F4; }
+        .logo span:nth-child(8) { color: #FBBC05; }
+
+        /* ── SEARCH FORM ── */
+        .search-form { width: 100%; max-width: 584px; }
+
+        .search-box-wrapper {
+            display: flex;
+            align-items: center;
+            border: 1px solid #dfe1e5;
+            border-radius: 24px;
+            padding: 10px 16px;
+            background: #fff;
+            transition: box-shadow .2s;
+        }
+        .search-box-wrapper:hover,
+        .search-box-wrapper:focus-within {
+            box-shadow: 0 1px 6px rgba(32,33,36,.28);
+            border-color: rgba(223,225,229,0);
+        }
+        .search-icon { color: #9aa0a6; margin-right: 12px; flex-shrink: 0; }
+        .search-input {
+            flex: 1; border: none; outline: none;
+            font-size: 16px; color: #202124; background: transparent;
+        }
+        .clear-btn {
+            background: none; border: none; cursor: pointer;
+            color: #70757a; padding: 4px; display: none;
+        }
+        .mic-icon { margin-left: 10px; color: #4285F4; cursor: pointer; flex-shrink: 0; }
+
+        /* ── BUTTONS ── */
+        .search-buttons {
+            display: flex; justify-content: center;
+            gap: 10px; margin-top: 24px;
+        }
+        .search-btn {
+            background: #f8f9fa; border: 1px solid #f8f9fa;
+            border-radius: 4px; color: #3c4043;
+            font-size: 14px; padding: 9px 20px; cursor: pointer;
+            transition: box-shadow .1s, border-color .1s;
+        }
+        .search-btn:hover {
+            box-shadow: 0 1px 1px rgba(0,0,0,.1);
+            border-color: #dadce0; color: #202124;
+        }
+
+        /* ── MODEL CHIPS ── */
+        .model-selector {
+            display: flex; justify-content: center;
+            gap: 8px; margin-top: 16px;
+        }
+        .model-chip {
+            display: flex; align-items: center; gap: 6px;
+            padding: 6px 14px; border-radius: 20px;
+            border: 1px solid #dadce0; font-size: 13px;
+            color: #3c4043; cursor: pointer; background: #fff;
+            transition: background .15s;
+        }
+        .model-chip input[type="radio"] { display: none; }
+        .model-chip.active {
+            background: #e8f0fe; border-color: #1a73e8; color: #1a73e8;
+        }
+        .model-chip:hover { background: #f1f3f4; }
+        .model-chip.active:hover { background: #d2e3fc; }
+
+        /* ── LANGUAGE HINT ── */
+        .lang-hint {
+            margin-top: 28px; font-size: 13px;
+            color: #70757a; text-align: center;
+        }
+        .lang-hint .lang-label { margin-right: 4px; }
+        .lang-link {
+            color: #1a73e8; cursor: pointer;
+            text-decoration: none; font-size: 13px;
+            padding: 2px 4px; border-radius: 3px;
+            transition: background .15s;
+        }
+        .lang-link:hover { text-decoration: underline; background: #e8f0fe; }
+        .lang-link.active-lang {
+            font-weight: bold; background: #e8f0fe;
+            border-bottom: 2px solid #1a73e8;
+        }
+        .lang-dot { color: #70757a; margin: 0 2px; }
+
+        /* ── FOOTER ── */
+        footer {
+            background: #f2f2f2;
+            border-top: 1px solid #e4e4e4;
+            padding: 14px 24px;
+        }
+        .footer-top {
+            font-size: 15px; color: #70757a;
+            padding-bottom: 12px; border-bottom: 1px solid #e4e4e4;
+        }
+        .footer-bottom {
+            display: flex; justify-content: space-between;
+            align-items: center; padding-top: 12px;
+            flex-wrap: wrap; gap: 8px;
+        }
+        .footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
+        .footer-links a {
+            font-size: 13px; color: #70757a; text-decoration: none;
+        }
+        .footer-links a:hover { text-decoration: underline; }
+
+        /* ── LANGUAGE BANNER ── */
+        .lang-banner {
+            display: none;
+            background: #e8f0fe;
+            border: 1px solid #1a73e8;
+            border-radius: 8px;
+            padding: 10px 18px;
+            margin-top: 16px;
+            font-size: 14px;
+            color: #1a73e8;
+            text-align: center;
+            max-width: 584px;
+            width: 100%;
+        }
+        .lang-banner.show { display: block; }
+    </style>
+</head>
+<body>
+
+    <!-- Top navigation -->
+    <nav class="top-nav">
+        <a href="#" id="nav-about">About</a>
+        {% if user.is_authenticated and user.is_staff %}
+            <a href="{% url 'search:documents' %}" style="color:#1a73e8;">📄 Documents</a>
+            <a href="{% url 'search:upload' %}"    style="color:#1a73e8;">➕ Add Document</a>
+            <a href="/admin/"                       style="color:#1a73e8;">⚙️ Admin Panel</a>
+            <a href="{% url 'search:logout' %}" class="btn-signin">Sign Out</a>
+        {% else %}
+            <a href="{% url 'search:login' %}" class="btn-signin" id="nav-admin">Admin Login</a>
+        {% endif %}
+    </nav>
+
+    <!-- Main content -->
+    <main class="main">
+
+        <!-- Logo -->
+        <div class="logo">
+            <span>I</span><span>R</span><span>S</span><span>e</span><span>a</span><span>r</span><span>c</span><span>h</span>
+        </div>
+
+        <!-- Language active banner -->
+        <div class="lang-banner" id="lang-banner"></div>
+
+        <!-- Search form -->
+        <form class="search-form" action="{% url 'search:search' %}" method="get" id="searchForm">
+
+            <div class="search-box-wrapper">
+                <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+
+                <input type="text" name="q" id="searchInput" class="search-input"
+                    placeholder="Search in any language..." autocomplete="off" autofocus>
+
+                <button type="button" class="clear-btn" id="clearBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                </button>
+
+                <svg class="mic-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5zm6 6c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                </svg>
+            </div>
+
+            <!-- Hidden fields -->
+            <input type="hidden" name="model" id="modelInput" value="cosine">
+            <input type="hidden" name="lang"  id="langInput"  value="english">
+
+            <!-- Buttons -->
+            <div class="search-buttons">
+                <button type="submit" class="search-btn" id="btn-search">IR Search</button>
+                <button type="button" class="search-btn" id="btn-lucky" onclick="setLucky()">I'm Feeling Lucky</button>
+            </div>
+
+            <!-- Ranking model chips -->
+            <div class="model-selector">
+                <label class="model-chip active" id="chip-cosine">
+                    <input type="radio" name="model_choice" value="cosine" checked onchange="setModel('cosine')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/>
+                    </svg>
+                    <span id="chip-vsm-label">Vector Space Model</span>
+                </label>
+                <label class="model-chip" id="chip-bm25">
+                    <input type="radio" name="model_choice" value="bm25" onchange="setModel('bm25')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/>
+                    </svg>
+                    BM25
+                </label>
+            </div>
+
+        </form>
+
+        <!-- Language selector -->
+        <p class="lang-hint">
+            <span class="lang-label" id="search-in-label">Search in</span>
+            <a class="lang-link active-lang" onclick="setLang('amharic')"   id="link-amharic">አማርኛ (Amharic)</a>
+            <span class="lang-dot">·</span>
+            <a class="lang-link" onclick="setLang('tigrinya')"  id="link-tigrinya">ትግርኛ (Tigrinya)</a>
+            <span class="lang-dot">·</span>
+            <a class="lang-link" onclick="setLang('afan_oromo')" id="link-afan_oromo">Afaan Oromo</a>
+            <span class="lang-dot">·</span>
+            <a class="lang-link" onclick="setLang('english')"   id="link-english">English</a>
+        </p>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-top" id="footer-country">Ethiopia</div>
+        <div class="footer-bottom">
+            <div class="footer-links">
+                <a href="#" id="footer-about">About</a>
+                <a href="#" id="footer-advertising">Advertising</a>
+                <a href="#" id="footer-business">Business</a>
+                <a href="#" id="footer-how">How Search works</a>
+            </div>
+            <div class="footer-links">
+                <a href="/admin/" id="footer-admin">Admin Panel</a>
+                <a href="#" id="footer-privacy">Privacy</a>
+                <a href="#" id="footer-terms">Terms</a>
+                <a href="#" id="footer-settings">Settings</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    // ═══════════════════════════════════════════════════════
+    // TRANSLATIONS  — add more languages here as needed
+    // ═══════════════════════════════════════════════════════
+    const TRANSLATIONS = {
+        amharic: {
+            pageTitle:      'IR ፍለጋ ሞተር',
+            placeholder:    'በማንኛውም ቋንቋ ይፈልጉ...',
+            btnSearch:      'IR ፍለጋ',
+            btnLucky:       'እድለኛ ነኝ',
+            chipVSM:        'የቬክተር ቦታ ሞዴል',
+            searchInLabel:  'ፍለጋ በ',
+            navAbout:       'ስለ',
+            navStore:       'መደብር',
+            navAdmin:       'አስተዳዳሪ',
+            footerCountry:  'ኢትዮጵያ',
+            footerAbout:    'ስለ',
+            footerAds:      'ማስታወቂያ',
+            footerBusiness: 'ንግድ',
+            footerHow:      'ፍለጋ እንዴት ይሰራል',
+            footerAdmin:    'የአስተዳዳሪ ፓነል',
+            footerPrivacy:  'ግላዊነት',
+            footerTerms:    'ውሎች',
+            footerSettings: 'ቅንብሮች',
+            banner:         '🇪🇹 አሁን በአማርኛ ቋንቋ እየፈለጉ ነዎት',
+            dir:            'ltr',
+        },
+        tigrinya: {
+            pageTitle:      'IR መርበብ ፍለጋ',
+            placeholder:    'ብዝኾነ ቋንቋ ድለ...',
+            btnSearch:      'IR ድለ',
+            btnLucky:       'ዕድለኛ እየ',
+            chipVSM:        'ናይ ቬክተር ቦታ ሞዴል',
+            searchInLabel:  'ድለ ብ',
+            navAbout:       'ብዛዕባ',
+            navStore:       'ድኳን',
+            navAdmin:       'ኣስተዳዳሪ',
+            footerCountry:  'ኢትዮጵያ',
+            footerAbout:    'ብዛዕባ',
+            footerAds:      'ማስታወቂያ',
+            footerBusiness: 'ንግዲ',
+            footerHow:      'ፍለጋ ከመይ ይሰርሕ',
+            footerAdmin:    'ናይ ኣስተዳዳሪ ፓነል',
+            footerPrivacy:  'ምስጢራዊነት',
+            footerTerms:    'ውዕሊ',
+            footerSettings: 'ቅንብሪ',
+            banner:         '🇪🇹 ሕጂ ብትግርኛ ቋንቋ ትደሊ ኣለኻ',
+            dir:            'ltr',
+        },
+        afan_oromo: {
+            pageTitle:      'IR Barbaadaa',
+            placeholder:    'Afaan kamiyyuu barbaadi...',
+            btnSearch:      'IR Barbaadi',
+            btnLucky:       'Carraan Qaba',
+            chipVSM:        'Moodeela Bakka Vektora',
+            searchInLabel:  'Barbaadi afaan',
+            navAbout:       'Waa\'ee',
+            navStore:       'Suuqii',
+            navAdmin:       'Bulchiinsa',
+            footerCountry:  'Itoophiyaa',
+            footerAbout:    'Waa\'ee',
+            footerAds:      'Beeksisa',
+            footerBusiness: 'Daldala',
+            footerHow:      'Barbaadaan akkamitti hojjeta',
+            footerAdmin:    'Mana Bulchiinsaa',
+            footerPrivacy:  'Iccitii',
+            footerTerms:    'Haala',
+            footerSettings: 'Qindaa\'ina',
+            banner:         '🇪🇹 Amma Afaan Oromootiin barbaadaa jirta',
+            dir:            'ltr',
+        },
+        english: {
+            pageTitle:      'IR Search Engine',
+            placeholder:    'Search in any language...',
+            btnSearch:      'IR Search',
+            btnLucky:       "I'm Feeling Lucky",
+            chipVSM:        'Vector Space Model',
+            searchInLabel:  'Search in',
+            navAbout:       'About',
+            navStore:       'Store',
+            navAdmin:       'Admin',
+            footerCountry:  'Ethiopia',
+            footerAbout:    'About',
+            footerAds:      'Advertising',
+            footerBusiness: 'Business',
+            footerHow:      'How Search works',
+            footerAdmin:    'Admin Panel',
+            footerPrivacy:  'Privacy',
+            footerTerms:    'Terms',
+            footerSettings: 'Settings',
+            banner:         '',
+            dir:            'ltr',
+        },
+    };
+
+    // ── current language (read from localStorage or default amharic) ──
+    let currentLang = localStorage.getItem('ir_lang') || 'amharic';
+
+    // ── apply a language ──
+    function setLang(lang) {
+        if (!TRANSLATIONS[lang]) return;
+        currentLang = lang;
+        localStorage.setItem('ir_lang', lang);
+
+        const t = TRANSLATIONS[lang];
+        document.getElementById('html-root').setAttribute('lang', lang === 'amharic' || lang === 'tigrinya' ? 'am' : lang === 'afan_oromo' ? 'om' : 'en');
+        document.getElementById('html-root').setAttribute('dir', t.dir);
+        document.getElementById('page-title').textContent   = t.pageTitle;
+        document.getElementById('searchInput').placeholder  = t.placeholder;
+        document.getElementById('btn-search').textContent   = t.btnSearch;
+        document.getElementById('btn-lucky').textContent    = t.btnLucky;
+        document.getElementById('chip-vsm-label').textContent = t.chipVSM;
+        document.getElementById('search-in-label').textContent = t.searchInLabel;
+        document.getElementById('nav-about').textContent    = t.navAbout;
+        document.getElementById('nav-store').textContent    = t.navStore;
+        document.getElementById('nav-admin').textContent    = t.navAdmin;
+        document.getElementById('footer-country').textContent = t.footerCountry;
+        document.getElementById('footer-about').textContent   = t.footerAbout;
+        document.getElementById('footer-advertising').textContent = t.footerAds;
+        document.getElementById('footer-business').textContent = t.footerBusiness;
+        document.getElementById('footer-how').textContent   = t.footerHow;
+        document.getElementById('footer-admin').textContent = t.footerAdmin;
+        document.getElementById('footer-privacy').textContent = t.footerPrivacy;
+        document.getElementById('footer-terms').textContent = t.footerTerms;
+        document.getElementById('footer-settings').textContent = t.footerSettings;
+        document.getElementById('langInput').value          = lang;
+
+        // banner
+        const banner = document.getElementById('lang-banner');
+        if (t.banner) {
+            banner.textContent = t.banner;
+            banner.classList.add('show');
+        } else {
+            banner.classList.remove('show');
+        }
+
+        // highlight active language link
+        ['amharic','tigrinya','afan_oromo','english'].forEach(l => {
+            const el = document.getElementById('link-' + l);
+            if (el) el.classList.toggle('active-lang', l === lang);
+        });
+
+        // update page title
+        document.title = t.pageTitle;
+    }
+
+    // ── model toggle ──
+    const modelInput = document.getElementById('modelInput');
+    function setModel(val) {
+        modelInput.value = val;
+        document.getElementById('chip-cosine').classList.toggle('active', val === 'cosine');
+        document.getElementById('chip-bm25').classList.toggle('active',   val === 'bm25');
+    }
+
+    // ── clear button ──
+    const input    = document.getElementById('searchInput');
+    const clearBtn = document.getElementById('clearBtn');
+    input.addEventListener('input', () => {
+        clearBtn.style.display = input.value ? 'block' : 'none';
+    });
+    clearBtn.addEventListener('click', () => {
+        input.value = '';
+        clearBtn.style.display = 'none';
+        input.focus();
+    });
+
+    // ── lucky button ──
+    function setLucky() {
+        if (input.value.trim()) document.getElementById('searchForm').submit();
+        else input.focus();
+    }
+
+    // ── apply saved language on page load ──
+    setLang(currentLang);
+    </script>
+
+</body>
+</html>

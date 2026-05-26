@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ query }} - IR Search</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+    <script>
+    // Restore language preference immediately (before render)
+    (function(){
+        var lang = localStorage.getItem('ir_lang') || 'english';
+        document.documentElement.setAttribute('data-lang', lang);
+    })();
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: arial, sans-serif;
+            background: #fff;
+            color: #202124;
+        }
+
+        /* ── HEADER ── */
+        header {
+            border-bottom: 1px solid #ebebeb;
+            padding: 14px 24px 0;
+            position: sticky;
+            top: 0;
+            background: #fff;
+            z-index: 100;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Mini logo */
+        .logo-mini {
+            font-size: 28px;
+            font-weight: 400;
+            letter-spacing: -1px;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+        .logo-mini span:nth-child(1) { color: #4285F4; }
+        .logo-mini span:nth-child(2) { color: #EA4335; }
+        .logo-mini span:nth-child(3) { color: #FBBC05; }
+        .logo-mini span:nth-child(4) { color: #4285F4; }
+        .logo-mini span:nth-child(5) { color: #34A853; }
+        .logo-mini span:nth-child(6) { color: #EA4335; }
+        .logo-mini span:nth-child(7) { color: #4285F4; }
+        .logo-mini span:nth-child(8) { color: #FBBC05; }
+
+        /* Search bar in header */
+        .header-search-wrap {
+            flex: 1;
+            max-width: 600px;
+        }
+
+        .header-search-box {
+            display: flex;
+            align-items: center;
+            border: 1px solid #dfe1e5;
+            border-radius: 24px;
+            padding: 8px 14px;
+            background: #fff;
+            transition: box-shadow .2s;
+        }
+
+        .header-search-box:hover,
+        .header-search-box:focus-within {
+            box-shadow: 0 1px 6px rgba(32,33,36,.28);
+            border-color: rgba(223,225,229,0);
+        }
+
+        .header-search-icon { color: #9aa0a6; margin-right: 10px; flex-shrink: 0; }
+
+        .header-search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            color: #202124;
+            background: transparent;
+        }
+
+        .header-search-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #4285F4;
+            padding: 4px 8px;
+            border-left: 1px solid #dfe1e5;
+            margin-left: 8px;
+        }
+
+        /* ── TABS ── */
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-top: 10px;
+            margin-left: 160px;
+        }
+
+        .tab {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            font-size: 13px;
+            color: #70757a;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            text-decoration: none;
+            transition: color .15s;
+        }
+
+        .tab:hover { color: #202124; }
+
+        .tab.active {
+            color: #1a73e8;
+            border-bottom-color: #1a73e8;
+        }
+
+        /* ── BODY LAYOUT ── */
+        .body-wrap {
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ── LEFT: RESULTS ── */
+        .results-col {
+            flex: 1;
+            max-width: 652px;
+            padding-top: 20px;
+        }
+
+        /* Stats bar */
+        .stats-bar {
+            font-size: 13px;
+            color: #70757a;
+            margin-bottom: 20px;
+        }
+
+        /* ── SINGLE RESULT ── */
+        .result-item {
+            margin-bottom: 28px;
+            max-width: 600px;
+        }
+
+        .result-url-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .result-favicon {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #e8f0fe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #1a73e8;
+            flex-shrink: 0;
+        }
+
+        .result-site {
+            font-size: 14px;
+            color: #202124;
+        }
+
+        .result-breadcrumb {
+            font-size: 12px;
+            color: #70757a;
+        }
+
+        .result-title {
+            font-size: 20px;
+            font-weight: 400;
+            color: #1a0dab;
+            line-height: 1.3;
+            cursor: pointer;
+            margin-bottom: 4px;
+        }
+
+        .result-title:hover { text-decoration: underline; }
+
+        .result-snippet {
+            font-size: 14px;
+            color: #4d5156;
+            line-height: 1.58;
+        }
+
+        .result-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+
+        .score-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #e6f4ea;
+            color: #137333;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .lang-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #e8f0fe;
+            color: #1a73e8;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .rank-num {
+            font-size: 12px;
+            color: #70757a;
+        }
+
+        /* ── RIGHT: SIDEBAR ── */
+        .sidebar {
+            width: 300px;
+            padding: 20px 0 20px 40px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-card {
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .sidebar-title {
+            font-size: 22px;
+            font-weight: 400;
+            margin-bottom: 12px;
+            color: #202124;
+        }
+
+        .sidebar-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f3f4;
+            font-size: 14px;
+        }
+
+        .sidebar-stat:last-child { border-bottom: none; }
+        .sidebar-stat-label { color: #70757a; }
+        .sidebar-stat-value { color: #202124; font-weight: 500; }
+
+        .model-switch {
+            margin-top: 16px;
+        }
+
+        .model-switch-title {
+            font-size: 13px;
+            color: #70757a;
+            margin-bottom: 8px;
+        }
+
+        .model-btn {
+            display: block;
+            width: 100%;
+            padding: 8px 14px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            background: #fff;
+            font-size: 14px;
+            color: #1a73e8;
+            cursor: pointer;
+            text-align: left;
+            margin-bottom: 6px;
+            transition: background .15s;
+        }
+
+        .model-btn:hover { background: #f8f9fa; }
+        .model-btn.active-model {
+            background: #e8f0fe;
+            border-color: #1a73e8;
+            font-weight: 500;
+        }
+
+        /* ── NO RESULTS ── */
+        .no-results {
+            padding: 40px 0;
+        }
+
+        .no-results h3 {
+            font-size: 20px;
+            font-weight: 400;
+            color: #202124;
+            margin-bottom: 8px;
+        }
+
+        .no-results p { font-size: 14px; color: #70757a; }
+
+        .suggestions { margin-top: 20px; }
+        .suggestions li {
+            font-size: 14px;
+            color: #4d5156;
+            margin-bottom: 6px;
+            list-style: disc;
+            margin-left: 20px;
+        }
+
+        /* ── PAGINATION ── */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 30px 0 50px;
+        }
+
+        .page-logo {
+            font-size: 26px;
+            margin-right: 10px;
+        }
+
+        .page-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: none;
+            font-size: 14px;
+            cursor: pointer;
+            color: #1a73e8;
+            font-weight: 500;
+        }
+
+        .page-btn:hover { background: #f1f3f4; }
+        .page-btn.current { color: #202124; font-weight: 700; }
+
+        /* ── FOOTER ── */
+        footer {
+            background: #f2f2f2;
+            border-top: 1px solid #e4e4e4;
+            padding: 14px 24px;
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
+        .footer-links a {
+            font-size: 13px;
+            color: #70757a;
+            text-decoration: none;
+        }
+        .footer-links a:hover { text-decoration: underline; }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .tabs { margin-left: 0; }
+            .header-top { gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+    <div class="header-top">
+
+        <!-- Mini logo -->
+        <a href="{% url 'search:index' %}" class="logo-mini">
+            <span>I</span><span>R</span><span>S</span><span>e</span><span>a</span><span>r</span><span>c</span><span>h</span>
+        </a>
+
+        <!-- Search bar -->
+        <div class="header-search-wrap">
+            <form action="{% url 'search:search' %}" method="get" id="headerForm">
+                <div class="header-search-box">
+                    <svg class="header-search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                    <input type="text" name="q" class="header-search-input"
+                           value="{{ query }}" autocomplete="off" id="headerInput">
+                    <input type="hidden" name="model" id="headerModel" value="{{ ranking_model }}">
+                    <button type="submit" class="header-search-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Admin controls (staff only) -->
+        {% if user.is_authenticated and user.is_staff %}
+        <div style="display:flex;gap:8px;margin-left:auto;align-items:center;">
+            <a href="{% url 'search:upload' %}"
+               style="font-size:13px;color:#1a73e8;text-decoration:none;padding:6px 12px;border:1px solid #dadce0;border-radius:4px;">
+               ➕ Add Doc
+            </a>
+            <a href="{% url 'search:documents' %}"
+               style="font-size:13px;color:#1a73e8;text-decoration:none;padding:6px 12px;border:1px solid #dadce0;border-radius:4px;">
+               📄 Docs
+            </a>
+            <a href="{% url 'search:logout' %}"
+               style="font-size:13px;color:#fff;background:#1a73e8;text-decoration:none;padding:6px 12px;border-radius:4px;">
+               Sign Out
+            </a>
+        </div>
+        {% else %}
+        <div style="margin-left:auto;">
+            <a href="{% url 'search:login' %}"
+               style="font-size:13px;color:#1a73e8;text-decoration:none;padding:6px 14px;border:1px solid #dadce0;border-radius:4px;">
+               🔐 Admin Login
+            </a>
+        </div>
+        {% endif %}
+
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <a class="tab active" href="#" id="tab-all">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="currentColor" d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 2.5h1.5v3H15V6.5zm-3 0h1.5v3H12V6.5zM7 6.5h5v3H7v-3zm10 11H7v-1h10v1zm0-3H7v-1h10v1zm0-3H7v-1h10v1z"/></svg>
+            <span>All</span>
+        </a>
+        <a class="tab" href="#" id="tab-docs">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="currentColor" d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+            <span>Documents</span>
+        </a>
+        {% if user.is_authenticated and user.is_staff %}
+        <a class="tab" href="/admin/" id="tab-admin">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            <span>Admin</span>
+        </a>
+        {% endif %}
+        <!-- Language switcher -->
+        <div style="margin-left:auto;display:flex;align-items:center;gap:6px;padding:0 10px 10px;">
+            <span style="font-size:12px;color:#70757a;" id="res-lang-label">Language:</span>
+            <a onclick="setResLang('amharic')"    id="res-link-amharic"    style="font-size:12px;color:#1a73e8;cursor:pointer;padding:2px 6px;border-radius:3px;" class="res-lang-link">አማርኛ</a>
+            <a onclick="setResLang('tigrinya')"   id="res-link-tigrinya"   style="font-size:12px;color:#1a73e8;cursor:pointer;padding:2px 6px;border-radius:3px;" class="res-lang-link">ትግርኛ</a>
+            <a onclick="setResLang('afan_oromo')" id="res-link-afan_oromo" style="font-size:12px;color:#1a73e8;cursor:pointer;padding:2px 6px;border-radius:3px;" class="res-lang-link">Oromoo</a>
+            <a onclick="setResLang('english')"    id="res-link-english"    style="font-size:12px;color:#1a73e8;cursor:pointer;padding:2px 6px;border-radius:3px;" class="res-lang-link">English</a>
+        </div>
+    </div>
+</header>
+
+<!-- ── BODY ── -->
+<div class="body-wrap">
+
+    <!-- Results column -->
+    <div class="results-col">
+
+        {% if query %}
+        <!-- Stats — text filled by JS translation -->
+        <div class="stats-bar" id="stats-bar">
+            <span id="stats-prefix">About</span>
+            <strong>{{ total_results }}</strong>
+            <span id="stats-suffix">results</span>
+            (<span id="stats-time">{{ query_time }}</span><span id="stats-sec">s</span>)
+            &nbsp;·&nbsp;
+            <span id="stats-using">Ranked by</span>
+            <strong id="stats-model">{% if ranking_model == 'cosine' %}Vector Space Model{% else %}BM25{% endif %}</strong>
+        </div>
+        {% endif %}
+
+        {% if results %}
+            {% for result in results %}
+            <div class="result-item">
+
+                <!-- URL row -->
+                <div class="result-url-row">
+                    <div class="result-favicon">{{ result.title|first|upper }}</div>
+                    <div>
+                        <div class="result-site">IR Search Engine</div>
+                        <div class="result-breadcrumb">
+                            irsearch.local › documents › {{ result.id }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Title — always a clickable link -->
+                <div class="result-title">
+                    {% if result.url %}
+                        <a href="{{ result.url }}" target="_blank" rel="noopener"
+                           style="color:inherit;text-decoration:none;">{{ result.title }}</a>
+                    {% else %}
+                        <a href="{% url 'search:document' result.id %}?q={{ query|urlencode }}"
+                           style="color:inherit;text-decoration:none;">{{ result.title }}</a>
+                    {% endif %}
+                </div>
+
+                <!-- Snippet -->
+                <div class="result-snippet">{{ result.snippet }}</div>
+
+                <!-- Meta pills -->
+                <div class="result-meta">
+                    <span class="score-pill">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        Score: {{ result.score }}
+                    </span>
+                    <span class="lang-pill">{{ result.language }}</span>
+                    <span class="rank-num">#{{ forloop.counter }}</span>
+                </div>
+
+            </div>
+            {% endfor %}
+
+            <!-- Pagination bar -->
+            <div class="pagination">
+                <span class="page-logo">
+                    <span style="color:#4285F4">I</span><span style="color:#EA4335">R</span><span style="color:#FBBC05">S</span>
+                </span>
+                <button class="page-btn current">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">4</button>
+                <button class="page-btn">5</button>
+                <button class="page-btn">›</button>
+            </div>
+
+        {% elif query %}
+            <!-- No results -->
+            <div class="no-results">
+                <h3 id="no-results-title">No results found for <strong>"{{ query }}"</strong></h3>
+                <p id="no-results-body">Your search did not match any documents in the index.</p>
+                <ul class="suggestions" id="suggestions-list">
+                    <li>Make sure all words are spelled correctly.</li>
+                    <li>Try different keywords.</li>
+                    <li>Try more general keywords.</li>
+                    <li>Make sure the index is built: <code>python manage.py index_docs</code></li>
+                </ul>
+            </div>
+        {% endif %}
+
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-card">
+            <div class="sidebar-title">Search Info</div>
+
+            <div class="sidebar-stat">
+                <span class="sidebar-stat-label">Results found</span>
+                <span class="sidebar-stat-value">{{ total_results }}</span>
+            </div>
+            <div class="sidebar-stat">
+                <span class="sidebar-stat-label">Query time</span>
+                <span class="sidebar-stat-value">{{ query_time }}s</span>
+            </div>
+            <div class="sidebar-stat">
+                <span class="sidebar-stat-label">Ranking model</span>
+                <span class="sidebar-stat-value">{% if ranking_model == 'cosine' %}VSM{% else %}BM25{% endif %}</span>
+            </div>
+            <div class="sidebar-stat">
+                <span class="sidebar-stat-label">Query</span>
+                <span class="sidebar-stat-value">{{ query|truncatechars:20 }}</span>
+            </div>
+
+            <!-- Switch model -->
+            <div class="model-switch">
+                <div class="model-switch-title">Switch ranking model:</div>
+                <button
+                    class="model-btn {% if ranking_model == 'cosine' %}active-model{% endif %}"
+                    onclick="switchModel('cosine')">
+                    📐 Vector Space Model
+                </button>
+                <button
+                    class="model-btn {% if ranking_model == 'bm25' %}active-model{% endif %}"
+                    onclick="switchModel('bm25')">
+                    📊 BM25
+                </button>
+            </div>
+        </div>
+    </aside>
+
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+    <div class="footer-bottom">
+        <div class="footer-links">
+            <a href="{% url 'search:index' %}">← Home</a>
+            <a href="#">About</a>
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+        </div>
+        <div class="footer-links">
+            <a href="/admin/">Admin Panel</a>
+            <a href="#">Settings</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+    function switchModel(model) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('model', model);
+        window.location.href = url.toString();
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // FULL TRANSLATIONS — results page
+    // ═══════════════════════════════════════════════════════
+    const T = {
+        amharic: {
+            tabAll:'ሁሉም', tabDocs:'ሰነዶች', tabAdmin:'አስተዳዳሪ',
+            statsPrefix:'ወደ', statsSuffix:'ውጤቶች', statsUsing:'ሞዴል',
+            statsSec:'ሰ', modelVSM:'የቬክተር ቦታ ሞዴል', modelBM25:'BM25',
+            noResultsTitle:'ምንም ውጤት አልተገኘም',
+            noResultsBody:'ፍለጋዎ ምንም ሰነድ አላገኘም።',
+            sug1:'ቃላቱ ትክክለኛ መሆናቸውን ያረጋግጡ።',
+            sug2:'ሌሎች ቁልፍ ቃላት ይሞክሩ።',
+            sug3:'የበለጠ አጠቃላይ ቃላት ይሞክሩ።',
+            sug4:'ኢንዴክሱ መሠራቱን ያረጋግጡ።',
+            sideTitle:'የፍለጋ መረጃ',
+            sideResults:'የተገኙ ውጤቶች', sideTime:'የፍለጋ ጊዜ',
+            sideModel:'ሞዴል', sideQuery:'ፍለጋ',
+            switchModel:'ሞዴል ቀይር',
+            footerHome:'← መነሻ', footerAbout:'ስለ',
+            footerPrivacy:'ግላዊነት', footerTerms:'ውሎች',
+            footerAdmin:'አስተዳዳሪ ፓነል', footerSettings:'ቅንብሮች',
+            langLabel:'ቋንቋ:',
+        },
+        tigrinya: {
+            tabAll:'ኩሉ', tabDocs:'ሰነዳት', tabAdmin:'ኣስተዳዳሪ',
+            statsPrefix:'ናብ', statsSuffix:'ውጽኢታት', statsUsing:'ሞዴል',
+            statsSec:'ካ', modelVSM:'ናይ ቬክተር ቦታ ሞዴል', modelBM25:'BM25',
+            noResultsTitle:'ዝኾነ ውጽኢት ኣይተረኽበን',
+            noResultsBody:'ድለያኻ ዝኾነ ሰነድ ኣይረኸበን።',
+            sug1:'ቃላት ብቕኑዕ ምጽሓፍ ኣረጋግጽ።',
+            sug2:'ካልእ ቃላት ፈትን።',
+            sug3:'ዝያዳ ሓፈሻዊ ቃላት ፈትን።',
+            sug4:'ኢንዴክስ ምህናጹ ኣረጋግጽ።',
+            sideTitle:'ናይ ድለያ ሓበሬታ',
+            sideResults:'ዝተረኽቡ ውጽኢታት', sideTime:'ናይ ድለያ ግዜ',
+            sideModel:'ሞዴል', sideQuery:'ድለያ',
+            switchModel:'ሞዴል ቀይር',
+            footerHome:'← መበቆል', footerAbout:'ብዛዕባ',
+            footerPrivacy:'ምስጢራዊነት', footerTerms:'ውዕሊ',
+            footerAdmin:'ናይ ኣስተዳዳሪ ፓነል', footerSettings:'ቅንብሪ',
+            langLabel:'ቋንቋ:',
+        },
+        afan_oromo: {
+            tabAll:'Hunda', tabDocs:'Galmee', tabAdmin:'Bulchiinsa',
+            statsPrefix:'Walumaa', statsSuffix:"bu'aa", statsUsing:'Moodeela',
+            statsSec:'s', modelVSM:'Moodeela Bakka Vektora', modelBM25:'BM25',
+            noResultsTitle:"Bu'aan hin argamne",
+            noResultsBody:'Barbaadaan kee galmee hin arganne.',
+            sug1:'Jechoota sirriitti barreessuu mirkaneessi.',
+            sug2:'Jechoota biroo yaalii godhi.',
+            sug3:'Jechoota waliigalaa yaalii godhi.',
+            sug4:'Indeeksiin ijaaramuu isaa mirkaneessi.',
+            sideTitle:'Odeeffannoo Barbaadaa',
+            sideResults:"Bu'aa argame", sideTime:'Yeroo barbaadaa',
+            sideModel:'Moodeela', sideQuery:'Barbaadaa',
+            switchModel:'Moodeela jijjiiri',
+            footerHome:'← Mana', footerAbout:"Waa'ee",
+            footerPrivacy:'Iccitii', footerTerms:'Haala',
+            footerAdmin:'Mana Bulchiinsaa', footerSettings:"Qindaa'ina",
+            langLabel:'Afaan:',
+        },
+        english: {
+            tabAll:'All', tabDocs:'Documents', tabAdmin:'Admin',
+            statsPrefix:'About', statsSuffix:'results', statsUsing:'Ranked by',
+            statsSec:'s', modelVSM:'Vector Space Model', modelBM25:'BM25',
+            noResultsTitle:'No results found',
+            noResultsBody:'Your search did not match any documents in the index.',
+            sug1:'Make sure all words are spelled correctly.',
+            sug2:'Try different keywords.',
+            sug3:'Try more general keywords.',
+            sug4:'Make sure the index is built: python manage.py index_docs',
+            sideTitle:'Search Info',
+            sideResults:'Results found', sideTime:'Query time',
+            sideModel:'Ranking model', sideQuery:'Query',
+            switchModel:'Switch ranking model',
+            footerHome:'← Home', footerAbout:'About',
+            footerPrivacy:'Privacy', footerTerms:'Terms',
+            footerAdmin:'Admin Panel', footerSettings:'Settings',
+            langLabel:'Language:',
+        },
+    };
+
+    function applyResultsLang(lang) {
+        const t = T[lang] || T['english'];
+
+        // tabs
+        const tabSpans = document.querySelectorAll('.tab span');
+        if (tabSpans[0]) tabSpans[0].textContent = t.tabAll;
+        if (tabSpans[1]) tabSpans[1].textContent = t.tabDocs;
+        if (tabSpans[2]) tabSpans[2].textContent = t.tabAdmin;
+
+        // stats bar
+        const sp = document.getElementById('stats-prefix');
+        const ss = document.getElementById('stats-suffix');
+        const su = document.getElementById('stats-using');
+        const sc = document.getElementById('stats-sec');
+        const sm = document.getElementById('stats-model');
+        if (sp) sp.textContent = t.statsPrefix;
+        if (ss) ss.textContent = t.statsSuffix;
+        if (su) su.textContent = t.statsUsing;
+        if (sc) sc.textContent = t.statsSec;
+        if (sm) {
+            const isVSM = sm.textContent.includes('Vector') || sm.textContent.includes('ቬክተር') || sm.textContent.includes('Vektora') || sm.textContent.includes('ቬ');
+            sm.textContent = isVSM ? t.modelVSM : t.modelBM25;
+        }
+
+        // no-results
+        const nrt = document.getElementById('no-results-title');
+        const nrb = document.getElementById('no-results-body');
+        const sl  = document.getElementById('suggestions-list');
+        if (nrt) {
+            const q = nrt.querySelector('strong');
+            const qText = q ? q.textContent : '';
+            nrt.innerHTML = t.noResultsTitle + (qText ? ' <strong>"' + qText + '"</strong>' : '');
+        }
+        if (nrb) nrb.textContent = t.noResultsBody;
+        if (sl) {
+            const items = sl.querySelectorAll('li');
+            const sugs = [t.sug1, t.sug2, t.sug3, t.sug4];
+            items.forEach((li, i) => { if (sugs[i]) li.textContent = sugs[i]; });
+        }
+
+        // sidebar
+        const sideTitle = document.querySelector('.sidebar-title');
+        if (sideTitle) sideTitle.textContent = t.sideTitle;
+        const sideLabels = document.querySelectorAll('.sidebar-stat-label');
+        const labelKeys = ['sideResults','sideTime','sideModel','sideQuery'];
+        sideLabels.forEach((el, i) => { if (t[labelKeys[i]]) el.textContent = t[labelKeys[i]]; });
+        const swTitle = document.querySelector('.model-switch-title');
+        if (swTitle) swTitle.textContent = t.switchModel + ':';
+
+        // footer
+        const fLinks = document.querySelectorAll('.footer-links a');
+        const fKeys = ['footerHome','footerAbout','footerPrivacy','footerTerms','footerAdmin','footerSettings'];
+        fLinks.forEach((a, i) => { if (t[fKeys[i]]) a.textContent = t[fKeys[i]]; });
+
+        // language switcher label
+        const ll = document.getElementById('res-lang-label');
+        if (ll) ll.textContent = t.langLabel;
+
+        // highlight active lang link
+        document.querySelectorAll('.res-lang-link').forEach(a => {
+            a.style.fontWeight = 'normal';
+            a.style.background = 'none';
+            a.style.borderBottom = 'none';
+        });
+        const active = document.getElementById('res-link-' + lang);
+        if (active) {
+            active.style.fontWeight = 'bold';
+            active.style.background = '#e8f0fe';
+            active.style.borderBottom = '2px solid #1a73e8';
+        }
+    }
+
+    function setResLang(lang) {
+        localStorage.setItem('ir_lang', lang);
+        applyResultsLang(lang);
+    }
+
+    // Apply saved language on load
+    const savedLang = localStorage.getItem('ir_lang') || 'english';
+    applyResultsLang(savedLang);
+</script>
+
+</body>
+</html>

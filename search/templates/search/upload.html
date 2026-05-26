@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Document - IR Search</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: arial, sans-serif; background:#f8f9fa; color:#202124; }
+
+        /* ── HEADER ── */
+        header {
+            background:#fff; border-bottom:1px solid #ebebeb;
+            padding:14px 24px; display:flex; align-items:center; gap:20px;
+            position:sticky; top:0; z-index:100;
+        }
+        .logo-mini { font-size:26px; font-weight:400; text-decoration:none; }
+        .logo-mini span:nth-child(1){color:#4285F4}
+        .logo-mini span:nth-child(2){color:#EA4335}
+        .logo-mini span:nth-child(3){color:#FBBC05}
+        .logo-mini span:nth-child(4){color:#4285F4}
+        .logo-mini span:nth-child(5){color:#34A853}
+        .logo-mini span:nth-child(6){color:#EA4335}
+        .logo-mini span:nth-child(7){color:#4285F4}
+        .logo-mini span:nth-child(8){color:#FBBC05}
+        .header-nav { display:flex; gap:16px; margin-left:auto; }
+        .header-nav a {
+            font-size:14px; color:#1a73e8; text-decoration:none;
+            padding:8px 16px; border-radius:4px; border:1px solid #dadce0;
+            transition:background .15s;
+        }
+        .header-nav a:hover { background:#e8f0fe; }
+        .header-nav a.active { background:#1a73e8; color:#fff; border-color:#1a73e8; }
+
+        /* ── MAIN ── */
+        .main { max-width:860px; margin:40px auto; padding:0 24px 60px; }
+
+        .page-title {
+            font-size:28px; font-weight:400; color:#202124;
+            margin-bottom:8px;
+        }
+        .page-subtitle { font-size:14px; color:#70757a; margin-bottom:32px; }
+
+        /* ── STATS BAR ── */
+        .stats-bar {
+            display:flex; gap:20px; margin-bottom:28px; flex-wrap:wrap;
+        }
+        .stat-chip {
+            background:#fff; border:1px solid #dadce0; border-radius:8px;
+            padding:12px 20px; text-align:center; min-width:120px;
+        }
+        .stat-chip .num { font-size:24px; font-weight:500; color:#1a73e8; }
+        .stat-chip .lbl { font-size:12px; color:#70757a; margin-top:2px; }
+
+        /* ── TABS ── */
+        .tabs {
+            display:flex; gap:0; border-bottom:2px solid #e8eaed;
+            margin-bottom:28px;
+        }
+        .tab-btn {
+            padding:10px 20px; font-size:14px; color:#70757a;
+            background:none; border:none; cursor:pointer;
+            border-bottom:3px solid transparent; margin-bottom:-2px;
+            transition:color .15s;
+        }
+        .tab-btn:hover { color:#202124; }
+        .tab-btn.active { color:#1a73e8; border-bottom-color:#1a73e8; font-weight:500; }
+
+        /* ── CARD ── */
+        .card {
+            background:#fff; border:1px solid #dadce0;
+            border-radius:12px; padding:32px;
+        }
+
+        /* ── FORM ── */
+        .form-group { margin-bottom:22px; }
+        .form-group label {
+            display:block; font-size:14px; font-weight:500;
+            color:#202124; margin-bottom:6px;
+        }
+        .form-group .hint { font-size:12px; color:#70757a; margin-bottom:6px; }
+        .form-control {
+            width:100%; padding:10px 14px; border:1px solid #dadce0;
+            border-radius:8px; font-size:14px; color:#202124;
+            transition:border-color .2s, box-shadow .2s;
+            font-family:arial,sans-serif;
+        }
+        .form-control:focus {
+            outline:none; border-color:#1a73e8;
+            box-shadow:0 0 0 3px rgba(26,115,232,.15);
+        }
+        textarea.form-control { resize:vertical; min-height:160px; }
+        select.form-control { background:#fff; cursor:pointer; }
+
+        /* ── FILE DROP ZONE ── */
+        .drop-zone {
+            border:2px dashed #dadce0; border-radius:12px;
+            padding:40px 20px; text-align:center; cursor:pointer;
+            transition:border-color .2s, background .2s;
+            background:#fafafa;
+        }
+        .drop-zone:hover, .drop-zone.drag-over {
+            border-color:#1a73e8; background:#e8f0fe;
+        }
+        .drop-zone .icon { font-size:48px; margin-bottom:12px; }
+        .drop-zone .title { font-size:16px; color:#202124; margin-bottom:6px; }
+        .drop-zone .sub { font-size:13px; color:#70757a; }
+        .drop-zone .file-name {
+            margin-top:12px; font-size:13px; color:#1a73e8;
+            font-weight:500; display:none;
+        }
+        #fileInput { display:none; }
+
+        /* ── DIVIDER ── */
+        .divider {
+            display:flex; align-items:center; gap:12px;
+            margin:24px 0; color:#70757a; font-size:13px;
+        }
+        .divider::before, .divider::after {
+            content:''; flex:1; height:1px; background:#e8eaed;
+        }
+
+        /* ── BUTTONS ── */
+        .btn-row { display:flex; gap:12px; margin-top:28px; flex-wrap:wrap; }
+        .btn-primary {
+            background:#1a73e8; color:#fff; border:none;
+            padding:12px 28px; border-radius:6px; font-size:15px;
+            cursor:pointer; font-weight:500; transition:background .15s;
+        }
+        .btn-primary:hover { background:#1765cc; }
+        .btn-secondary {
+            background:#fff; color:#1a73e8; border:1px solid #dadce0;
+            padding:12px 28px; border-radius:6px; font-size:15px;
+            cursor:pointer; text-decoration:none; display:inline-block;
+            transition:background .15s;
+        }
+        .btn-secondary:hover { background:#f8f9fa; }
+
+        /* ── MESSAGES ── */
+        .alert {
+            padding:14px 18px; border-radius:8px; margin-bottom:20px;
+            font-size:14px; display:flex; align-items:center; gap:10px;
+        }
+        .alert-success { background:#e6f4ea; color:#137333; border:1px solid #ceead6; }
+        .alert-error   { background:#fce8e6; color:#c5221f; border:1px solid #f5c6c5; }
+
+        /* ── TAB PANELS ── */
+        .tab-panel { display:none; }
+        .tab-panel.active { display:block; }
+
+        /* ── FOOTER ── */
+        footer {
+            background:#f2f2f2; border-top:1px solid #e4e4e4;
+            padding:14px 24px; margin-top:40px;
+        }
+        .footer-links { display:flex; gap:20px; flex-wrap:wrap; }
+        .footer-links a { font-size:13px; color:#70757a; text-decoration:none; }
+        .footer-links a:hover { text-decoration:underline; }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+    <a href="{% url 'search:index' %}" class="logo-mini">
+        <span>I</span><span>R</span><span>S</span><span>e</span><span>a</span><span>r</span><span>c</span><span>h</span>
+    </a>
+    <nav class="header-nav">
+        <a href="{% url 'search:index' %}">🔍 Search</a>
+        <a href="{% url 'search:upload' %}" class="active">➕ Add Document</a>
+        <a href="{% url 'search:documents' %}">📄 All Documents</a>
+        <a href="/admin/">⚙️ Admin Panel</a>
+        <a href="{% url 'search:logout' %}" style="background:#fce8e6;color:#c5221f;border-color:#f5c6c5;">
+            Sign Out ({{ user.username }})
+        </a>
+    </nav>
+</header>
+
+<!-- MAIN -->
+<div class="main">
+
+    <h1 class="page-title">➕ Add Document</h1>
+    <p class="page-subtitle">Upload a file or paste text to add it to the search index.</p>
+
+    <!-- Stats -->
+    <div class="stats-bar">
+        <div class="stat-chip">
+            <div class="num">{{ stats.total_documents }}</div>
+            <div class="lbl">Documents</div>
+        </div>
+        <div class="stat-chip">
+            <div class="num">{{ stats.total_terms }}</div>
+            <div class="lbl">Index Terms</div>
+        </div>
+        <div class="stat-chip">
+            <div class="num">{{ stats.avg_doc_length|floatformat:0 }}</div>
+            <div class="lbl">Avg Length</div>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+        {% for msg in messages %}
+        <div class="alert {% if msg.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
+            {{ msg }}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('file')">📁 Upload File</button>
+        <button class="tab-btn"        onclick="showTab('text')">✏️ Paste Text</button>
+    </div>
+
+    <!-- ── TAB 1: FILE UPLOAD ── -->
+    <div class="tab-panel active" id="panel-file">
+        <div class="card">
+            <form method="post" enctype="multipart/form-data" id="fileForm">
+                {% csrf_token %}
+                <input type="hidden" name="_tab" value="file">
+
+                <!-- Drop zone -->
+                <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                    <div class="icon">📂</div>
+                    <div class="title">Click to choose a file or drag & drop here</div>
+                    <div class="sub">Supports: .txt &nbsp;·&nbsp; .pdf &nbsp;·&nbsp; .html</div>
+                    <div class="file-name" id="fileName"></div>
+                </div>
+                <input type="file" id="fileInput" name="file" accept=".txt,.pdf,.html,.htm">
+
+                <div class="divider">Optional details</div>
+
+                <div class="form-group">
+                    <label>Title <span style="color:#70757a;font-weight:400">(leave blank to use filename)</span></label>
+                    <input type="text" name="title" class="form-control" placeholder="e.g. Introduction to IR">
+                </div>
+
+                <div class="form-group">
+                    <label>Language</label>
+                    <select name="language" class="form-control">
+                        <option value="english">🌐 English</option>
+                        <option value="amharic">🇪🇹 አማርኛ (Amharic)</option>
+                        <option value="tigrinya">🇪🇷 ትግርኛ (Tigrinya)</option>
+                        <option value="afan_oromo">🟢 Afaan Oromo</option>
+                        <option value="mixed">🌍 Mixed</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>URL <span style="color:#70757a;font-weight:400">(optional)</span></label>
+                    <input type="url" name="url" class="form-control" placeholder="https://example.com/document">
+                </div>
+
+                <div class="btn-row">
+                    <button type="submit" class="btn-primary">⬆️ Upload & Index</button>
+                    <a href="{% url 'search:documents' %}" class="btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ── TAB 2: PASTE TEXT ── -->
+    <div class="tab-panel" id="panel-text">
+        <div class="card">
+            <form method="post" id="textForm">
+                {% csrf_token %}
+                <input type="hidden" name="_tab" value="text">
+
+                <div class="form-group">
+                    <label>Title <span style="color:#c5221f">*</span></label>
+                    <input type="text" name="title" class="form-control"
+                           placeholder="e.g. Information Retrieval Basics" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Document Text <span style="color:#c5221f">*</span></label>
+                    <div class="hint">Paste or type the full text of your document. Supports Amharic, Tigrinya, Afan Oromo, and English.</div>
+                    <textarea name="raw_text" class="form-control" rows="10"
+                              placeholder="Paste your document text here...&#10;&#10;You can write in any language:&#10;አማርኛ, ትግርኛ, Afaan Oromo, English..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Language</label>
+                    <select name="language" class="form-control">
+                        <option value="english">🌐 English</option>
+                        <option value="amharic">🇪🇹 አማርኛ (Amharic)</option>
+                        <option value="tigrinya">🇪🇷 ትግርኛ (Tigrinya)</option>
+                        <option value="afan_oromo">🟢 Afaan Oromo</option>
+                        <option value="mixed">🌍 Mixed</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>URL <span style="color:#70757a;font-weight:400">(optional)</span></label>
+                    <input type="url" name="url" class="form-control" placeholder="https://example.com/source">
+                </div>
+
+                <div class="btn-row">
+                    <button type="submit" class="btn-primary">💾 Save & Index</button>
+                    <a href="{% url 'search:documents' %}" class="btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-links">
+        <a href="{% url 'search:index' %}">← Home</a>
+        <a href="{% url 'search:documents' %}">All Documents</a>
+        <a href="/admin/">Admin Panel</a>
+    </div>
+</footer>
+
+<script>
+    // ── Tab switching ──
+    function showTab(name) {
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('panel-' + name).classList.add('active');
+        event.target.classList.add('active');
+    }
+
+    // ── File input ──
+    const fileInput  = document.getElementById('fileInput');
+    const dropZone   = document.getElementById('dropZone');
+    const fileNameEl = document.getElementById('fileName');
+
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files[0]) {
+            fileNameEl.textContent = '✅ ' + fileInput.files[0].name;
+            fileNameEl.style.display = 'block';
+        }
+    });
+
+    // ── Drag & drop ──
+    dropZone.addEventListener('dragover', e => {
+        e.preventDefault();
+        dropZone.classList.add('drag-over');
+    });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop', e => {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+        const file = e.dataTransfer.files[0];
+        if (file) {
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            fileInput.files = dt.files;
+            fileNameEl.textContent = '✅ ' + file.name;
+            fileNameEl.style.display = 'block';
+        }
+    });
+</script>
+
+</body>
+</html>

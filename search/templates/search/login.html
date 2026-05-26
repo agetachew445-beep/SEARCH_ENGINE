@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - IR Search</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: arial, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-box {
+            background: #fff;
+            border: 1px solid #dadce0;
+            border-radius: 12px;
+            padding: 48px 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.08);
+        }
+
+        /* Logo */
+        .logo {
+            text-align: center;
+            font-size: 42px;
+            font-weight: 400;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+        .logo span:nth-child(1){color:#4285F4}
+        .logo span:nth-child(2){color:#EA4335}
+        .logo span:nth-child(3){color:#FBBC05}
+        .logo span:nth-child(4){color:#4285F4}
+        .logo span:nth-child(5){color:#34A853}
+        .logo span:nth-child(6){color:#EA4335}
+        .logo span:nth-child(7){color:#4285F4}
+        .logo span:nth-child(8){color:#FBBC05}
+
+        .login-title {
+            text-align: center;
+            font-size: 22px;
+            font-weight: 400;
+            color: #202124;
+            margin-bottom: 6px;
+        }
+        .login-sub {
+            text-align: center;
+            font-size: 14px;
+            color: #70757a;
+            margin-bottom: 32px;
+        }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #202124;
+            margin-bottom: 6px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #dadce0;
+            border-radius: 6px;
+            font-size: 15px;
+            color: #202124;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 3px rgba(26,115,232,.15);
+        }
+
+        .btn-login {
+            width: 100%;
+            background: #1a73e8;
+            color: #fff;
+            border: none;
+            padding: 13px;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background .15s;
+        }
+        .btn-login:hover { background: #1765cc; }
+
+        .error-msg {
+            background: #fce8e6;
+            color: #c5221f;
+            border: 1px solid #f5c6c5;
+            border-radius: 6px;
+            padding: 12px 14px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #1a73e8;
+            text-decoration: none;
+        }
+        .back-link:hover { text-decoration: underline; }
+
+        .lock-icon {
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-box">
+
+        <!-- Logo -->
+        <div class="logo">
+            <span>I</span><span>R</span><span>S</span><span>e</span><span>a</span><span>r</span><span>c</span><span>h</span>
+        </div>
+
+        <div class="lock-icon">🔐</div>
+        <h1 class="login-title">Admin Sign In</h1>
+        <p class="login-sub">Only administrators can access this area.</p>
+
+        <!-- Error -->
+        {% if error %}
+        <div class="error-msg">
+            ⚠️ {{ error }}
+        </div>
+        {% endif %}
+
+        <!-- Form -->
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username"
+                       class="form-control" placeholder="Enter admin username"
+                       autofocus required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password"
+                       class="form-control" placeholder="Enter password"
+                       required>
+            </div>
+
+            <button type="submit" class="btn-login">Sign In →</button>
+        </form>
+
+        <a href="{% url 'search:index' %}" class="back-link">← Back to Search</a>
+
+    </div>
+
+</body>
+</html>

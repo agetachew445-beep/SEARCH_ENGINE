@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Documents - IR Search</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:arial,sans-serif; background:#f8f9fa; color:#202124; }
+
+        /* HEADER */
+        header {
+            background:#fff; border-bottom:1px solid #ebebeb;
+            padding:14px 24px; display:flex; align-items:center; gap:20px;
+            position:sticky; top:0; z-index:100;
+        }
+        .logo-mini { font-size:26px; font-weight:400; text-decoration:none; }
+        .logo-mini span:nth-child(1){color:#4285F4}
+        .logo-mini span:nth-child(2){color:#EA4335}
+        .logo-mini span:nth-child(3){color:#FBBC05}
+        .logo-mini span:nth-child(4){color:#4285F4}
+        .logo-mini span:nth-child(5){color:#34A853}
+        .logo-mini span:nth-child(6){color:#EA4335}
+        .logo-mini span:nth-child(7){color:#4285F4}
+        .logo-mini span:nth-child(8){color:#FBBC05}
+        .header-nav { display:flex; gap:12px; margin-left:auto; flex-wrap:wrap; }
+        .header-nav a {
+            font-size:14px; color:#1a73e8; text-decoration:none;
+            padding:8px 14px; border-radius:4px; border:1px solid #dadce0;
+            transition:background .15s;
+        }
+        .header-nav a:hover { background:#e8f0fe; }
+        .header-nav a.active { background:#1a73e8; color:#fff; border-color:#1a73e8; }
+
+        /* MAIN */
+        .main { max-width:960px; margin:40px auto; padding:0 24px 60px; }
+
+        .page-header {
+            display:flex; justify-content:space-between; align-items:center;
+            margin-bottom:24px; flex-wrap:wrap; gap:12px;
+        }
+        .page-title { font-size:28px; font-weight:400; }
+
+        /* STATS */
+        .stats-bar { display:flex; gap:16px; margin-bottom:28px; flex-wrap:wrap; }
+        .stat-chip {
+            background:#fff; border:1px solid #dadce0; border-radius:8px;
+            padding:12px 20px; text-align:center; min-width:110px;
+        }
+        .stat-chip .num { font-size:22px; font-weight:500; color:#1a73e8; }
+        .stat-chip .lbl { font-size:12px; color:#70757a; margin-top:2px; }
+
+        /* MESSAGES */
+        .alert {
+            padding:14px 18px; border-radius:8px; margin-bottom:20px;
+            font-size:14px; display:flex; align-items:center; gap:10px;
+        }
+        .alert-success { background:#e6f4ea; color:#137333; border:1px solid #ceead6; }
+        .alert-error   { background:#fce8e6; color:#c5221f; border:1px solid #f5c6c5; }
+
+        /* SEARCH BAR */
+        .filter-bar {
+            display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;
+        }
+        .filter-input {
+            flex:1; min-width:200px; padding:9px 14px;
+            border:1px solid #dadce0; border-radius:6px; font-size:14px;
+        }
+        .filter-input:focus { outline:none; border-color:#1a73e8; }
+        .filter-select {
+            padding:9px 14px; border:1px solid #dadce0; border-radius:6px;
+            font-size:14px; background:#fff; cursor:pointer;
+        }
+
+        /* TABLE */
+        .table-wrap {
+            background:#fff; border:1px solid #dadce0;
+            border-radius:12px; overflow:hidden;
+        }
+        table { width:100%; border-collapse:collapse; }
+        thead { background:#f8f9fa; }
+        th {
+            padding:12px 16px; text-align:left; font-size:13px;
+            font-weight:600; color:#70757a; border-bottom:1px solid #e8eaed;
+        }
+        td {
+            padding:14px 16px; font-size:14px;
+            border-bottom:1px solid #f1f3f4; vertical-align:top;
+        }
+        tr:last-child td { border-bottom:none; }
+        tr:hover td { background:#f8f9fa; }
+
+        .doc-title { font-weight:500; color:#1a0dab; margin-bottom:4px; }
+        .doc-snippet { font-size:13px; color:#70757a; line-height:1.5; }
+
+        .lang-badge {
+            display:inline-block; padding:2px 8px; border-radius:10px;
+            font-size:12px; font-weight:500;
+        }
+        .lang-english   { background:#e8f0fe; color:#1a73e8; }
+        .lang-amharic   { background:#fce8e6; color:#c5221f; }
+        .lang-tigrinya  { background:#e6f4ea; color:#137333; }
+        .lang-afan_oromo{ background:#fef7e0; color:#b06000; }
+        .lang-mixed     { background:#f3e8fd; color:#7b1fa2; }
+
+        .indexed-yes { color:#137333; font-size:13px; }
+        .indexed-no  { color:#c5221f; font-size:13px; }
+
+        .btn-delete {
+            background:none; border:1px solid #dadce0; color:#c5221f;
+            padding:5px 12px; border-radius:4px; font-size:13px;
+            cursor:pointer; transition:background .15s;
+        }
+        .btn-delete:hover { background:#fce8e6; border-color:#c5221f; }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align:center; padding:60px 20px; color:#70757a;
+        }
+        .empty-state .icon { font-size:64px; margin-bottom:16px; }
+        .empty-state h3 { font-size:20px; font-weight:400; margin-bottom:8px; color:#202124; }
+        .empty-state p { font-size:14px; margin-bottom:20px; }
+
+        .btn-primary {
+            background:#1a73e8; color:#fff; border:none;
+            padding:10px 22px; border-radius:6px; font-size:14px;
+            cursor:pointer; text-decoration:none; display:inline-block;
+            font-weight:500; transition:background .15s;
+        }
+        .btn-primary:hover { background:#1765cc; }
+
+        /* FOOTER */
+        footer {
+            background:#f2f2f2; border-top:1px solid #e4e4e4;
+            padding:14px 24px; margin-top:40px;
+        }
+        .footer-links { display:flex; gap:20px; flex-wrap:wrap; }
+        .footer-links a { font-size:13px; color:#70757a; text-decoration:none; }
+        .footer-links a:hover { text-decoration:underline; }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+    <a href="{% url 'search:index' %}" class="logo-mini">
+        <span>I</span><span>R</span><span>S</span><span>e</span><span>a</span><span>r</span><span>c</span><span>h</span>
+    </a>
+    <nav class="header-nav">
+        <a href="{% url 'search:index' %}">🔍 Search</a>
+        <a href="{% url 'search:upload' %}">➕ Add Document</a>
+        <a href="{% url 'search:documents' %}" class="active">📄 All Documents</a>
+        <a href="/admin/">⚙️ Admin Panel</a>
+        <a href="{% url 'search:logout' %}" style="background:#fce8e6;color:#c5221f;border-color:#f5c6c5;">
+            Sign Out ({{ user.username }})
+        </a>
+    </nav>
+</header>
+
+<!-- MAIN -->
+<div class="main">
+
+    <div class="page-header">
+        <h1 class="page-title">📄 All Documents</h1>
+        <a href="{% url 'search:upload' %}" class="btn-primary">➕ Add New Document</a>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-bar">
+        <div class="stat-chip">
+            <div class="num">{{ stats.total_documents }}</div>
+            <div class="lbl">Total Docs</div>
+        </div>
+        <div class="stat-chip">
+            <div class="num">{{ stats.total_terms }}</div>
+            <div class="lbl">Index Terms</div>
+        </div>
+        <div class="stat-chip">
+            <div class="num">{{ documents|length }}</div>
+            <div class="lbl">Showing</div>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+        {% for msg in messages %}
+        <div class="alert {% if msg.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
+            {{ msg }}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+        <input type="text" class="filter-input" id="filterInput"
+               placeholder="🔍 Filter documents by title..." oninput="filterDocs()">
+        <select class="filter-select" id="filterLang" onchange="filterDocs()">
+            <option value="">All Languages</option>
+            <option value="english">English</option>
+            <option value="amharic">Amharic</option>
+            <option value="tigrinya">Tigrinya</option>
+            <option value="afan_oromo">Afan Oromo</option>
+            <option value="mixed">Mixed</option>
+        </select>
+    </div>
+
+    {% if documents %}
+    <div class="table-wrap">
+        <table id="docsTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Title & Preview</th>
+                    <th>Language</th>
+                    <th>Words</th>
+                    <th>Indexed</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doc in documents %}
+                <tr data-title="{{ doc.title|lower }}" data-lang="{{ doc.language }}">
+                    <td style="color:#70757a;font-size:13px;">{{ doc.id }}</td>
+                    <td>
+                        <div class="doc-title">{{ doc.title }}</div>
+                        <div class="doc-snippet">{{ doc.raw_text|truncatechars:120 }}</div>
+                    </td>
+                    <td>
+                        <span class="lang-badge lang-{{ doc.language }}">
+                            {% if doc.language == 'amharic' %}🇪🇹 አማርኛ
+                            {% elif doc.language == 'tigrinya' %}🇪🇷 ትግርኛ
+                            {% elif doc.language == 'afan_oromo' %}🟢 Oromoo
+                            {% elif doc.language == 'mixed' %}🌍 Mixed
+                            {% else %}🌐 English{% endif %}
+                        </span>
+                    </td>
+                    <td style="color:#70757a;font-size:13px;">
+                        {{ doc.raw_text|wordcount }}
+                    </td>
+                    <td>
+                        {% if doc.is_indexed %}
+                            <span class="indexed-yes">✅ Yes</span>
+                        {% else %}
+                            <span class="indexed-no">⏳ No</span>
+                        {% endif %}
+                    </td>
+                    <td style="color:#70757a;font-size:13px;white-space:nowrap;">
+                        {{ doc.created_at|date:"M d, Y" }}
+                    </td>
+                    <td>
+                        <form method="post" action="{% url 'search:delete' doc.id %}"
+                              onsubmit="return confirm('Delete \'{{ doc.title }}\'?')">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-delete">🗑️ Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+        <div class="icon">📭</div>
+        <h3>No documents yet</h3>
+        <p>Add your first document to start searching.</p>
+        <a href="{% url 'search:upload' %}" class="btn-primary">➕ Add First Document</a>
+    </div>
+    {% endif %}
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-links">
+        <a href="{% url 'search:index' %}">← Home</a>
+        <a href="{% url 'search:upload' %}">Add Document</a>
+        <a href="/admin/">Admin Panel</a>
+    </div>
+</footer>
+
+<script>
+function filterDocs() {
+    const q    = document.getElementById('filterInput').value.toLowerCase();
+    const lang = document.getElementById('filterLang').value;
+    document.querySelectorAll('#docsTable tbody tr').forEach(row => {
+        const titleMatch = row.dataset.title.includes(q);
+        const langMatch  = !lang || row.dataset.lang === lang;
+        row.style.display = (titleMatch && langMatch) ? '' : 'none';
+    });
+}
+</script>
+
+</body>
+</html>
