@@ -15,7 +15,11 @@ SECRET_KEY = os.environ.get(
 
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['*']   # Railway / PythonAnywhere / localhost
+# Allow all hosts including Render's domain
+ALLOWED_HOSTS = ['*']
+
+# Trust Render's proxy headers
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 # Application definition
