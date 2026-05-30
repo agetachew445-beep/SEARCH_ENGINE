@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Crawler - IR Search</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:arial,sans-serif;background:#f8f9fa;color:#202124}
+        header{background:#fff;border-bottom:1px solid #ebebeb;padding:14px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;position:sticky;top:0;z-index:100}
+        .logo-mini{font-size:26px;font-weight:400;text-decoration:none}
+        .logo-mini span:nth-child(1){color:#1a56db}.logo-mini span:nth-child(2){color:#1a56db}
+        .logo-mini span:nth-child(3){color:#1a56db}.logo-mini span:nth-child(4){color:#1a56db}
+        .logo-mini span:nth-child(5){color:#1a56db}.logo-mini span:nth-child(6){color:#1a56db}
+        .logo-mini span:nth-child(7){color:#1a56db}.logo-mini span:nth-child(8){color:#1a56db}
+        .nav{display:flex;gap:10px;margin-left:auto;flex-wrap:wrap}
+        .nav a{font-size:13px;color:#1a56db;text-decoration:none;padding:7px 14px;border:1px solid #dadce0;border-radius:4px}
+        .nav a:hover{background:#e8f0fe}
+        .nav a.active{background:#1a56db;color:#fff;border-color:#1a56db}
+        .nav a.signout{background:#fce8e6;color:#c5221f;border-color:#f5c6c5}
+        .main{max-width:760px;margin:40px auto;padding:0 24px 80px}
+        h1{font-size:28px;font-weight:400;margin-bottom:6px}
+        .subtitle{font-size:14px;color:#70757a;margin-bottom:28px}
+        .stats-bar{display:flex;gap:16px;margin-bottom:28px;flex-wrap:wrap}
+        .stat-chip{background:#fff;border:1px solid #dadce0;border-radius:8px;padding:12px 20px;text-align:center;min-width:110px}
+        .stat-chip .num{font-size:22px;font-weight:500;color:#1a56db}
+        .stat-chip .lbl{font-size:12px;color:#70757a;margin-top:2px}
+        .alert{padding:14px 18px;border-radius:8px;margin-bottom:20px;font-size:14px}
+        .alert-success{background:#e8f0fe;color:#1a56db;border:1px solid #c5d9f7}
+        .alert-error{background:#fce8e6;color:#c5221f;border:1px solid #f5c6c5}
+        .card{background:#fff;border:1px solid #dadce0;border-radius:12px;padding:32px;margin-bottom:24px}
+        .card h2{font-size:18px;font-weight:500;margin-bottom:20px;color:#202124}
+        .form-group{margin-bottom:20px}
+        .form-group label{display:block;font-size:14px;font-weight:500;margin-bottom:6px}
+        .form-group .hint{font-size:12px;color:#70757a;margin-bottom:6px}
+        .form-control{width:100%;padding:11px 14px;border:1px solid #dadce0;border-radius:6px;font-size:14px;color:#202124;font-family:arial,sans-serif}
+        .form-control:focus{outline:none;border-color:#1a56db;box-shadow:0 0 0 3px rgba(26,115,232,.15)}
+        select.form-control{background:#fff;cursor:pointer}
+        .btn-row{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
+        .btn-primary{background:#1a56db;color:#fff;border:none;padding:12px 28px;border-radius:6px;font-size:15px;cursor:pointer;font-weight:500}
+        .btn-primary:hover{background:#1446b8}
+        .btn-secondary{background:#fff;color:#1a56db;border:1px solid #dadce0;padding:12px 28px;border-radius:6px;font-size:15px;cursor:pointer;text-decoration:none;display:inline-block}
+        .btn-secondary:hover{background:#f8f9fa}
+        .info-box{background:#e8f0fe;border:1px solid #c5d9f7;border-radius:8px;padding:16px 20px;margin-bottom:24px;font-size:14px;color:#1a56db}
+        .info-box ul{margin-top:8px;padding-left:20px}
+        .info-box li{margin-bottom:4px}
+        footer{background:#f2f2f2;border-top:1px solid #e4e4e4;padding:14px 24px;margin-top:40px}
+        .footer-links{display:flex;gap:20px;flex-wrap:wrap}
+        .footer-links a{font-size:13px;color:#70757a;text-decoration:none}
+        .footer-links a:hover{text-decoration:underline}
+        #loading{display:none;text-align:center;padding:20px;color:#1a56db;font-size:14px}
+        .spinner{display:inline-block;width:20px;height:20px;border:3px solid #e8f0fe;border-top-color:#1a56db;border-radius:50%;animation:spin .8s linear infinite;margin-right:8px;vertical-align:middle}
+        @keyframes spin{to{transform:rotate(360deg)}}
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="{% url 'search:index' %}" class="logo-mini">
+        <span>I</span><span>R</span><span>S</span><span>e</span><span>a</span><span>r</span><span>c</span><span>h</span>
+    </a>
+    <nav class="nav">
+        <a href="{% url 'search:index' %}">🔍 Search</a>
+        <a href="{% url 'search:upload' %}">➕ Upload</a>
+        <a href="{% url 'search:crawl' %}" class="active">🌐 Crawl URL</a>
+        <a href="{% url 'search:documents' %}">📄 Documents</a>
+        <a href="{% url 'search:logout' %}" class="signout">Sign Out ({{ user.username }})</a>
+    </nav>
+</header>
+
+<div class="main">
+    <h1>🌐 Web Crawler</h1>
+    <p class="subtitle">Fetch any web page and add it to the search index automatically.</p>
+
+    <div class="stats-bar">
+        <div class="stat-chip"><div class="num">{{ stats.total_documents }}</div><div class="lbl">Documents</div></div>
+        <div class="stat-chip"><div class="num">{{ stats.total_terms }}</div><div class="lbl">Index Terms</div></div>
+    </div>
+
+    {% if messages %}
+        {% for msg in messages %}
+        <div class="alert {% if msg.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">{{ msg }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="info-box">
+        <strong>ℹ️ How it works:</strong>
+        <ul>
+            <li>Enter any public web page URL (news, Wikipedia, blogs, etc.)</li>
+            <li>The crawler fetches the page, extracts clean text, and detects the language</li>
+            <li>The document is automatically indexed and ready to search</li>
+            <li>Works with Amharic, Tigrinya, Afan Oromo, and English pages</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>🔗 Crawl a Web Page</h2>
+        <form method="post" id="crawlForm" onsubmit="showLoading()">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label>Web Page URL <span style="color:#c5221f">*</span></label>
+                <div class="hint">Enter the full URL including https://</div>
+                <input type="url" name="url" class="form-control"
+                       placeholder="https://en.wikipedia.org/wiki/Information_retrieval"
+                       required autofocus>
+            </div>
+
+            <div class="form-group">
+                <label>Title <span style="color:#70757a;font-weight:400">(optional — auto-detected from page)</span></label>
+                <input type="text" name="title" class="form-control"
+                       placeholder="Leave blank to use page title">
+            </div>
+
+            <div class="form-group">
+                <label>Language</label>
+                <select name="language" class="form-control">
+                    <option value="auto">🔍 Auto-detect</option>
+                    <option value="english">🌐 English</option>
+                    <option value="amharic">🇪🇹 አማርኛ (Amharic)</option>
+                    <option value="tigrinya">🇪🇷 ትግርኛ (Tigrinya)</option>
+                    <option value="afan_oromo">🟢 Afaan Oromo</option>
+                    <option value="mixed">🌍 Mixed</option>
+                </select>
+            </div>
+
+            <div id="loading"><span class="spinner"></span>Fetching page, please wait...</div>
+
+            <div class="btn-row">
+                <button type="submit" class="btn-primary">🌐 Fetch & Index</button>
+                <a href="{% url 'search:documents' %}" class="btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>💡 Example URLs to try</h2>
+        <div style="display:flex;flex-direction:column;gap:10px">
+            {% for example in examples %}
+            <div style="display:flex;align-items:center;gap:10px;padding:10px;background:#f8f9fa;border-radius:6px;font-size:13px">
+                <span>{{ example.flag }}</span>
+                <div>
+                    <div style="font-weight:500;color:#202124">{{ example.title }}</div>
+                    <div style="color:#70757a">{{ example.url }}</div>
+                </div>
+                <button onclick="document.querySelector('[name=url]').value='{{ example.url }}'"
+                        style="margin-left:auto;background:#e8f0fe;color:#1a56db;border:none;padding:5px 12px;border-radius:4px;cursor:pointer;font-size:12px">
+                    Use this URL
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="footer-links">
+        <a href="{% url 'search:index' %}">← Home</a>
+        <a href="{% url 'search:upload' %}">Upload File</a>
+        <a href="{% url 'search:documents' %}">All Documents</a>
+    </div>
+</footer>
+
+<script>
+function showLoading() {
+    document.getElementById('loading').style.display = 'block';
+    document.querySelector('.btn-primary').disabled = true;
+    document.querySelector('.btn-primary').textContent = 'Fetching...';
+}
+</script>
+</body>
+</html>

@@ -16,22 +16,22 @@
             position:sticky; top:0; z-index:100;
         }
         .logo-mini { font-size:26px; font-weight:400; text-decoration:none; }
-        .logo-mini span:nth-child(1){color:#4285F4}
-        .logo-mini span:nth-child(2){color:#EA4335}
-        .logo-mini span:nth-child(3){color:#FBBC05}
-        .logo-mini span:nth-child(4){color:#4285F4}
-        .logo-mini span:nth-child(5){color:#34A853}
-        .logo-mini span:nth-child(6){color:#EA4335}
-        .logo-mini span:nth-child(7){color:#4285F4}
-        .logo-mini span:nth-child(8){color:#FBBC05}
+        .logo-mini span:nth-child(1){color:#1a56db}
+        .logo-mini span:nth-child(2){color:#1a56db}
+        .logo-mini span:nth-child(3){color:#1a56db}
+        .logo-mini span:nth-child(4){color:#1a56db}
+        .logo-mini span:nth-child(5){color:#1a56db}
+        .logo-mini span:nth-child(6){color:#1a56db}
+        .logo-mini span:nth-child(7){color:#1a56db}
+        .logo-mini span:nth-child(8){color:#1a56db}
         .header-nav { display:flex; gap:16px; margin-left:auto; }
         .header-nav a {
-            font-size:14px; color:#1a73e8; text-decoration:none;
+            font-size:14px; color:#1a56db; text-decoration:none;
             padding:8px 16px; border-radius:4px; border:1px solid #dadce0;
             transition:background .15s;
         }
         .header-nav a:hover { background:#e8f0fe; }
-        .header-nav a.active { background:#1a73e8; color:#fff; border-color:#1a73e8; }
+        .header-nav a.active { background:#1a56db; color:#fff; border-color:#1a56db; }
 
         /* ── MAIN ── */
         .main { max-width:860px; margin:40px auto; padding:0 24px 60px; }
@@ -50,7 +50,7 @@
             background:#fff; border:1px solid #dadce0; border-radius:8px;
             padding:12px 20px; text-align:center; min-width:120px;
         }
-        .stat-chip .num { font-size:24px; font-weight:500; color:#1a73e8; }
+        .stat-chip .num { font-size:24px; font-weight:500; color:#1a56db; }
         .stat-chip .lbl { font-size:12px; color:#70757a; margin-top:2px; }
 
         /* ── TABS ── */
@@ -65,7 +65,7 @@
             transition:color .15s;
         }
         .tab-btn:hover { color:#202124; }
-        .tab-btn.active { color:#1a73e8; border-bottom-color:#1a73e8; font-weight:500; }
+        .tab-btn.active { color:#1a56db; border-bottom-color:#1a56db; font-weight:500; }
 
         /* ── CARD ── */
         .card {
@@ -87,7 +87,7 @@
             font-family:arial,sans-serif;
         }
         .form-control:focus {
-            outline:none; border-color:#1a73e8;
+            outline:none; border-color:#1a56db;
             box-shadow:0 0 0 3px rgba(26,115,232,.15);
         }
         textarea.form-control { resize:vertical; min-height:160px; }
@@ -101,13 +101,13 @@
             background:#fafafa;
         }
         .drop-zone:hover, .drop-zone.drag-over {
-            border-color:#1a73e8; background:#e8f0fe;
+            border-color:#1a56db; background:#e8f0fe;
         }
         .drop-zone .icon { font-size:48px; margin-bottom:12px; }
         .drop-zone .title { font-size:16px; color:#202124; margin-bottom:6px; }
         .drop-zone .sub { font-size:13px; color:#70757a; }
         .drop-zone .file-name {
-            margin-top:12px; font-size:13px; color:#1a73e8;
+            margin-top:12px; font-size:13px; color:#1a56db;
             font-weight:500; display:none;
         }
         #fileInput { display:none; }
@@ -124,13 +124,13 @@
         /* ── BUTTONS ── */
         .btn-row { display:flex; gap:12px; margin-top:28px; flex-wrap:wrap; }
         .btn-primary {
-            background:#1a73e8; color:#fff; border:none;
+            background:#1a56db; color:#fff; border:none;
             padding:12px 28px; border-radius:6px; font-size:15px;
             cursor:pointer; font-weight:500; transition:background .15s;
         }
-        .btn-primary:hover { background:#1765cc; }
+        .btn-primary:hover { background:#1446b8; }
         .btn-secondary {
-            background:#fff; color:#1a73e8; border:1px solid #dadce0;
+            background:#fff; color:#1a56db; border:1px solid #dadce0;
             padding:12px 28px; border-radius:6px; font-size:15px;
             cursor:pointer; text-decoration:none; display:inline-block;
             transition:background .15s;
@@ -142,7 +142,7 @@
             padding:14px 18px; border-radius:8px; margin-bottom:20px;
             font-size:14px; display:flex; align-items:center; gap:10px;
         }
-        .alert-success { background:#e6f4ea; color:#137333; border:1px solid #ceead6; }
+        .alert-success { background:#e8f0fe; color:#1a56db; border:1px solid #c5d9f7; }
         .alert-error   { background:#fce8e6; color:#c5221f; border:1px solid #f5c6c5; }
 
         /* ── TAB PANELS ── */
@@ -169,6 +169,7 @@
     <nav class="header-nav">
         <a href="{% url 'search:index' %}">🔍 Search</a>
         <a href="{% url 'search:upload' %}" class="active">➕ Add Document</a>
+        <a href="{% url 'search:crawl' %}">🌐 Crawl URL</a>
         <a href="{% url 'search:documents' %}">📄 All Documents</a>
         <a href="/admin/">⚙️ Admin Panel</a>
         <a href="{% url 'search:logout' %}" style="background:#fce8e6;color:#c5221f;border-color:#f5c6c5;">

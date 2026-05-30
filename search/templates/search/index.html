@@ -27,11 +27,11 @@
         .top-nav a { font-size: 13px; color: #202124; text-decoration: none; }
         .top-nav a:hover { text-decoration: underline; }
         .btn-signin {
-            background: #1a73e8; color: #fff !important;
+            background: #1a56db; color: #fff !important;
             padding: 8px 18px; border-radius: 4px;
             font-size: 14px; font-weight: 500; text-decoration: none !important;
         }
-        .btn-signin:hover { background: #1765cc; }
+        .btn-signin:hover { background: #1446b8; }
 
         /* ── MAIN ── */
         .main {
@@ -46,19 +46,13 @@
         /* ── LOGO ── */
         .logo {
             font-size: 80px;
-            font-weight: 400;
+            font-weight: 700;
             letter-spacing: -2px;
             margin-bottom: 28px;
             user-select: none;
+            color: #1a56db;
         }
-        .logo span:nth-child(1) { color: #4285F4; }
-        .logo span:nth-child(2) { color: #EA4335; }
-        .logo span:nth-child(3) { color: #FBBC05; }
-        .logo span:nth-child(4) { color: #4285F4; }
-        .logo span:nth-child(5) { color: #34A853; }
-        .logo span:nth-child(6) { color: #EA4335; }
-        .logo span:nth-child(7) { color: #4285F4; }
-        .logo span:nth-child(8) { color: #FBBC05; }
+        .logo span { color: #1a56db; }
 
         /* ── SEARCH FORM ── */
         .search-form { width: 100%; max-width: 584px; }
@@ -74,7 +68,7 @@
         }
         .search-box-wrapper:hover,
         .search-box-wrapper:focus-within {
-            box-shadow: 0 1px 6px rgba(32,33,36,.28);
+            box-shadow: 0 1px 6px rgba(26,86,219,.2);
             border-color: rgba(223,225,229,0);
         }
         .search-icon { color: #9aa0a6; margin-right: 12px; flex-shrink: 0; }
@@ -86,7 +80,7 @@
             background: none; border: none; cursor: pointer;
             color: #70757a; padding: 4px; display: none;
         }
-        .mic-icon { margin-left: 10px; color: #4285F4; cursor: pointer; flex-shrink: 0; }
+        .mic-icon { margin-left: 10px; color: #1a56db; cursor: pointer; flex-shrink: 0; }
 
         /* ── BUTTONS ── */
         .search-buttons {
@@ -118,7 +112,7 @@
         }
         .model-chip input[type="radio"] { display: none; }
         .model-chip.active {
-            background: #e8f0fe; border-color: #1a73e8; color: #1a73e8;
+            background: #e8f0fe; border-color: #1a56db; color: #1a56db;
         }
         .model-chip:hover { background: #f1f3f4; }
         .model-chip.active:hover { background: #d2e3fc; }
@@ -130,7 +124,7 @@
         }
         .lang-hint .lang-label { margin-right: 4px; }
         .lang-link {
-            color: #1a73e8; cursor: pointer;
+            color: #1a56db; cursor: pointer;
             text-decoration: none; font-size: 13px;
             padding: 2px 4px; border-radius: 3px;
             transition: background .15s;
@@ -138,7 +132,7 @@
         .lang-link:hover { text-decoration: underline; background: #e8f0fe; }
         .lang-link.active-lang {
             font-weight: bold; background: #e8f0fe;
-            border-bottom: 2px solid #1a73e8;
+            border-bottom: 2px solid #1a56db;
         }
         .lang-dot { color: #70757a; margin: 0 2px; }
 
@@ -167,12 +161,12 @@
         .lang-banner {
             display: none;
             background: #e8f0fe;
-            border: 1px solid #1a73e8;
+            border: 1px solid #1a56db;
             border-radius: 8px;
             padding: 10px 18px;
             margin-top: 16px;
             font-size: 14px;
-            color: #1a73e8;
+            color: #1a56db;
             text-align: center;
             max-width: 584px;
             width: 100%;
@@ -186,9 +180,9 @@
     <nav class="top-nav">
         <a href="#" id="nav-about">About</a>
         {% if user.is_authenticated and user.is_staff %}
-            <a href="{% url 'search:documents' %}" style="color:#1a73e8;">📄 Documents</a>
-            <a href="{% url 'search:upload' %}"    style="color:#1a73e8;">➕ Add Document</a>
-            <a href="/admin/"                       style="color:#1a73e8;">⚙️ Admin Panel</a>
+            <a href="{% url 'search:documents' %}" style="color:#1a56db;">📄 Documents</a>
+            <a href="{% url 'search:upload' %}"    style="color:#1a56db;">➕ Add Document</a>
+            <a href="/admin/"                       style="color:#1a56db;">⚙️ Admin Panel</a>
             <a href="{% url 'search:logout' %}" class="btn-signin">Sign Out</a>
         {% else %}
             <a href="{% url 'search:login' %}" class="btn-signin" id="nav-admin">Admin Login</a>

@@ -6,119 +6,92 @@
     <title>{{ doc.title }} - IR Search</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family:arial,sans-serif; background:#fff; color:#202124; }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:arial,sans-serif;background:#f8f9fa;color:#202124}
+        header{border-bottom:1px solid #ebebeb;padding:14px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;background:#fff;z-index:100;flex-wrap:wrap}
+        .logo-mini{font-size:26px;font-weight:400;text-decoration:none;flex-shrink:0}
+        .logo-mini span:nth-child(1){color:#1a56db}.logo-mini span:nth-child(2){color:#1a56db}
+        .logo-mini span:nth-child(3){color:#1a56db}.logo-mini span:nth-child(4){color:#1a56db}
+        .logo-mini span:nth-child(5){color:#1a56db}.logo-mini span:nth-child(6){color:#1a56db}
+        .logo-mini span:nth-child(7){color:#1a56db}.logo-mini span:nth-child(8){color:#1a56db}
+        .header-search{display:flex;align-items:center;border:1px solid #dfe1e5;border-radius:24px;padding:8px 14px;background:#fff;flex:1;max-width:500px;transition:box-shadow .2s}
+        .header-search:focus-within{box-shadow:0 1px 6px rgba(32,33,36,.28);border-color:transparent}
+        .header-search input{flex:1;border:none;outline:none;font-size:15px;color:#202124;background:transparent}
+        .header-search button{background:none;border:none;cursor:pointer;color:#1a56db;padding:4px 8px;border-left:1px solid #dfe1e5;margin-left:8px}
+        .header-right{margin-left:auto;display:flex;gap:8px;align-items:center}
+        .header-right a{font-size:13px;color:#1a56db;text-decoration:none;padding:6px 12px;border:1px solid #dadce0;border-radius:4px}
+        .header-right a:hover{background:#e8f0fe}
+        .header-right a.signout{background:#fce8e6;color:#c5221f;border-color:#f5c6c5}
 
-        /* HEADER */
-        header {
-            border-bottom:1px solid #ebebeb;
-            padding:14px 24px;
-            display:flex; align-items:center; gap:20px;
-            position:sticky; top:0; background:#fff; z-index:100;
-            flex-wrap:wrap;
-        }
-        .logo-mini { font-size:26px; font-weight:400; text-decoration:none; flex-shrink:0; }
-        .logo-mini span:nth-child(1){color:#4285F4}
-        .logo-mini span:nth-child(2){color:#EA4335}
-        .logo-mini span:nth-child(3){color:#FBBC05}
-        .logo-mini span:nth-child(4){color:#4285F4}
-        .logo-mini span:nth-child(5){color:#34A853}
-        .logo-mini span:nth-child(6){color:#EA4335}
-        .logo-mini span:nth-child(7){color:#4285F4}
-        .logo-mini span:nth-child(8){color:#FBBC05}
+        .main{max-width:1100px;margin:0 auto;padding:28px 24px 80px;display:grid;grid-template-columns:1fr 300px;gap:28px}
+        @media(max-width:768px){.main{grid-template-columns:1fr}}
 
-        /* inline search bar */
-        .header-search-box {
-            display:flex; align-items:center;
-            border:1px solid #dfe1e5; border-radius:24px;
-            padding:8px 14px; background:#fff;
-            flex:1; max-width:500px;
-            transition:box-shadow .2s;
-        }
-        .header-search-box:focus-within {
-            box-shadow:0 1px 6px rgba(32,33,36,.28);
-            border-color:transparent;
-        }
-        .header-search-box input {
-            flex:1; border:none; outline:none;
-            font-size:15px; color:#202124; background:transparent;
-        }
-        .header-search-box button {
-            background:none; border:none; cursor:pointer; color:#4285F4;
-            padding:4px 8px; border-left:1px solid #dfe1e5; margin-left:8px;
-        }
+        /* LEFT COLUMN */
+        .breadcrumb{font-size:13px;color:#70757a;margin-bottom:16px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;grid-column:1/-1}
+        .breadcrumb a{color:#1a56db;text-decoration:none}
+        .breadcrumb a:hover{text-decoration:underline}
+        .back-btn{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #dadce0;border-radius:6px;padding:8px 16px;font-size:14px;color:#202124;text-decoration:none;margin-bottom:20px;transition:background .15s}
+        .back-btn:hover{background:#f1f3f4}
 
-        /* MAIN */
-        .main { max-width:860px; margin:0 auto; padding:32px 24px 80px; }
+        .doc-card{background:#fff;border:1px solid #dadce0;border-radius:12px;padding:28px}
+        .doc-title{font-size:26px;font-weight:400;color:#202124;margin-bottom:14px;line-height:1.3}
+        .doc-meta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid #f1f3f4}
+        .chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:14px;font-size:12px;font-weight:500}
+        .chip-lang{background:#e8f0fe;color:#1a56db}
+        .chip-type{background:#e8f0fe;color:#1a56db}
+        .chip-date{background:#e8f0fe;color:#1a56db}
+        .chip-words{background:#e8f0fe;color:#1a56db}
+        .chip-indexed{background:#e8f0fe;color:#1a56db}
+        .chip-read{background:#fce8e6;color:#c5221f}
+        .doc-url{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#1a56db;text-decoration:none;margin-bottom:18px;word-break:break-all}
+        .doc-url:hover{text-decoration:underline}
 
-        /* BREADCRUMB */
-        .breadcrumb {
-            font-size:13px; color:#70757a; margin-bottom:20px;
-            display:flex; align-items:center; gap:6px; flex-wrap:wrap;
-        }
-        .breadcrumb a { color:#1a73e8; text-decoration:none; }
-        .breadcrumb a:hover { text-decoration:underline; }
-        .breadcrumb .sep { color:#dadce0; }
+        /* SUMMARY BOX */
+        .summary-box{background:#e8f0fe;border-left:4px solid #1a56db;border-radius:0 8px 8px 0;padding:16px 18px;margin-bottom:20px}
+        .summary-box .label{font-size:12px;font-weight:600;color:#1a56db;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+        .summary-box p{font-size:14px;color:#202124;line-height:1.7}
 
-        /* DOCUMENT CARD */
-        .doc-card {
-            background:#fff; border:1px solid #dadce0;
-            border-radius:12px; padding:32px; margin-bottom:24px;
-        }
+        /* CONCEPTS */
+        .concepts-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+        .concept-tag{background:#f1f3f4;color:#3c4043;padding:5px 12px;border-radius:16px;font-size:13px;cursor:pointer;text-decoration:none;transition:background .15s}
+        .concept-tag:hover{background:#e8f0fe;color:#1a56db}
 
-        .doc-title {
-            font-size:28px; font-weight:400; color:#202124;
-            margin-bottom:16px; line-height:1.3;
-        }
+        /* FULL TEXT */
+        .doc-body{font-size:15px;line-height:1.8;color:#3c4043;white-space:pre-wrap;word-break:break-word;max-height:600px;overflow-y:auto;padding-right:8px}
+        .doc-body::-webkit-scrollbar{width:6px}
+        .doc-body::-webkit-scrollbar-thumb{background:#dadce0;border-radius:3px}
+        .show-more-btn{display:block;text-align:center;margin-top:12px;color:#1a56db;cursor:pointer;font-size:14px;background:none;border:none;width:100%}
 
-        .doc-meta {
-            display:flex; gap:12px; flex-wrap:wrap;
-            margin-bottom:24px; padding-bottom:20px;
-            border-bottom:1px solid #f1f3f4;
-        }
-        .meta-chip {
-            display:inline-flex; align-items:center; gap:5px;
-            padding:4px 12px; border-radius:16px;
-            font-size:13px; font-weight:500;
-        }
-        .chip-lang  { background:#e8f0fe; color:#1a73e8; }
-        .chip-type  { background:#e6f4ea; color:#137333; }
-        .chip-date  { background:#fef7e0; color:#b06000; }
-        .chip-words { background:#f3e8fd; color:#7b1fa2; }
-        .chip-indexed { background:#e6f4ea; color:#137333; }
+        /* ADMIN ACTIONS */
+        .admin-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;padding-top:16px;border-top:1px solid #f1f3f4}
 
-        /* URL link */
-        .doc-url {
-            display:inline-flex; align-items:center; gap:6px;
-            font-size:14px; color:#1a73e8; text-decoration:none;
-            margin-bottom:20px; word-break:break-all;
-        }
-        .doc-url:hover { text-decoration:underline; }
+        /* RIGHT SIDEBAR */
+        .sidebar{}
+        .sidebar-card{background:#fff;border:1px solid #dadce0;border-radius:12px;padding:20px;margin-bottom:20px}
+        .sidebar-card h3{font-size:16px;font-weight:500;color:#202124;margin-bottom:14px}
+        .sidebar-stat{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f1f3f4;font-size:13px}
+        .sidebar-stat:last-child{border-bottom:none}
+        .sidebar-stat .lbl{color:#70757a}
+        .sidebar-stat .val{color:#202124;font-weight:500}
 
-        /* BODY TEXT */
-        .doc-body {
-            font-size:15px; line-height:1.8; color:#3c4043;
-            white-space:pre-wrap; word-break:break-word;
-        }
+        /* READABILITY */
+        .readability-bar{height:8px;border-radius:4px;background:#e8eaed;margin:8px 0;overflow:hidden}
+        .readability-fill{height:100%;border-radius:4px;transition:width .5s}
+        .fill-easy{background:#1a56db}
+        .fill-moderate{background:#1a56db}
+        .fill-difficult{background:#1a56db}
 
-        /* BACK BUTTON */
-        .back-btn {
-            display:inline-flex; align-items:center; gap:8px;
-            background:#f8f9fa; border:1px solid #dadce0;
-            border-radius:6px; padding:10px 20px;
-            font-size:14px; color:#202124; text-decoration:none;
-            transition:background .15s; margin-bottom:24px;
-        }
-        .back-btn:hover { background:#e8eaed; }
+        /* RELATED DOCS */
+        .related-item{padding:10px 0;border-bottom:1px solid #f1f3f4}
+        .related-item:last-child{border-bottom:none}
+        .related-item a{font-size:14px;color:#1a56db;text-decoration:none;display:block;margin-bottom:3px}
+        .related-item a:hover{text-decoration:underline}
+        .related-score{font-size:12px;color:#70757a}
 
-        /* FOOTER */
-        footer {
-            background:#f2f2f2; border-top:1px solid #e4e4e4;
-            padding:14px 24px; margin-top:40px;
-        }
-        .footer-links { display:flex; gap:20px; flex-wrap:wrap; }
-        .footer-links a { font-size:13px; color:#70757a; text-decoration:none; }
-        .footer-links a:hover { text-decoration:underline; }
+        footer{background:#f2f2f2;border-top:1px solid #e4e4e4;padding:14px 24px;margin-top:40px}
+        .footer-links{display:flex;gap:20px;flex-wrap:wrap}
+        .footer-links a{font-size:13px;color:#70757a;text-decoration:none}
+        .footer-links a:hover{text-decoration:underline}
     </style>
 </head>
 <body>
@@ -128,119 +101,183 @@
     <a href="{% url 'search:index' %}" class="logo-mini">
         <span>I</span><span>R</span><span>S</span><span>e</span><span>a</span><span>r</span><span>c</span><span>h</span>
     </a>
-
     <form action="{% url 'search:search' %}" method="get" style="flex:1;max-width:500px;">
-        <div class="header-search-box">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                 style="color:#9aa0a6;margin-right:8px;flex-shrink:0;">
-                <path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-            </svg>
-            <input type="text" name="q" value="{{ query }}"
-                   placeholder="Search again..." autocomplete="off">
-            <button type="submit">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-                </svg>
-            </button>
+        <div class="header-search">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" style="color:#9aa0a6;margin-right:8px;flex-shrink:0"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input type="text" name="q" value="{{ query }}" placeholder="Search again..." autocomplete="off">
+            <button type="submit"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></button>
         </div>
     </form>
-
-    {% if user.is_authenticated and user.is_staff %}
-    <a href="{% url 'search:logout' %}"
-       style="font-size:13px;color:#c5221f;text-decoration:none;padding:6px 12px;border:1px solid #f5c6c5;border-radius:4px;background:#fce8e6;">
-        Sign Out
-    </a>
-    {% else %}
-    <a href="{% url 'search:login' %}"
-       style="font-size:13px;color:#1a73e8;text-decoration:none;padding:6px 12px;border:1px solid #dadce0;border-radius:4px;">
-        🔐 Admin
-    </a>
-    {% endif %}
+    <div class="header-right">
+        {% if user.is_authenticated and user.is_staff %}
+        <a href="{% url 'search:logout' %}" class="signout">Sign Out</a>
+        {% else %}
+        <a href="{% url 'search:login' %}">🔐 Admin</a>
+        {% endif %}
+    </div>
 </header>
 
-<!-- MAIN -->
+<!-- MAIN GRID -->
 <div class="main">
 
-    <!-- Back button -->
-    {% if query %}
-    <a href="{% url 'search:search' %}?q={{ query|urlencode }}" class="back-btn">
-        ← Back to results for "{{ query }}"
-    </a>
-    {% else %}
-    <a href="{% url 'search:index' %}" class="back-btn">← Back to Search</a>
-    {% endif %}
-
-    <!-- Breadcrumb -->
+    <!-- Breadcrumb (full width) -->
     <div class="breadcrumb">
-        <a href="{% url 'search:index' %}">IRSearch</a>
-        <span class="sep">›</span>
-        <a href="{% url 'search:search' %}?q={{ query|urlencode }}">Results</a>
-        <span class="sep">›</span>
-        <span>{{ doc.title|truncatechars:50 }}</span>
+        <a href="{% url 'search:index' %}">IRSearch</a> ›
+        {% if query %}<a href="{% url 'search:search' %}?q={{ query|urlencode }}">Results for "{{ query }}"</a> ›{% endif %}
+        <span>{{ doc.title|truncatechars:60 }}</span>
     </div>
 
-    <!-- Document card -->
-    <div class="doc-card">
-
-        <h1 class="doc-title">{{ doc.title }}</h1>
-
-        <!-- Meta chips -->
-        <div class="doc-meta">
-            <span class="meta-chip chip-lang">
-                {% if doc.language == 'amharic' %}🇪🇹 አማርኛ
-                {% elif doc.language == 'tigrinya' %}🇪🇷 ትግርኛ
-                {% elif doc.language == 'afan_oromo' %}🟢 Afaan Oromo
-                {% elif doc.language == 'mixed' %}🌍 Mixed
-                {% else %}🌐 English{% endif %}
-            </span>
-            <span class="meta-chip chip-type">📄 {{ doc.get_doc_type_display }}</span>
-            <span class="meta-chip chip-date">📅 {{ doc.pub_date|date:"M d, Y" }}</span>
-            <span class="meta-chip chip-words">📝 {{ doc.raw_text|wordcount }} words</span>
-            {% if doc.is_indexed %}
-            <span class="meta-chip chip-indexed">✅ Indexed</span>
-            {% endif %}
-        </div>
-
-        <!-- External URL if available -->
-        {% if doc.url %}
-        <a href="{{ doc.url }}" target="_blank" rel="noopener" class="doc-url">
-            🔗 {{ doc.url }}
-        </a>
+    <!-- LEFT: Document -->
+    <div>
+        {% if query %}
+        <a href="{% url 'search:search' %}?q={{ query|urlencode }}" class="back-btn">← Back to results</a>
+        {% else %}
+        <a href="{% url 'search:index' %}" class="back-btn">← Back to Search</a>
         {% endif %}
 
-        <!-- Full document text -->
-        <div class="doc-body">{{ doc.raw_text }}</div>
+        <div class="doc-card">
+            <h1 class="doc-title">{{ doc.title }}</h1>
 
+            <!-- Meta chips -->
+            <div class="doc-meta">
+                <span class="chip chip-lang">
+                    {% if doc.language == 'amharic' %}🇪🇹 አማርኛ
+                    {% elif doc.language == 'tigrinya' %}🇪🇷 ትግርኛ
+                    {% elif doc.language == 'afan_oromo' %}🟢 Afaan Oromo
+                    {% elif doc.language == 'mixed' %}🌍 Mixed
+                    {% else %}🌐 English{% endif %}
+                </span>
+                <span class="chip chip-type">📄 {{ doc.get_doc_type_display }}</span>
+                <span class="chip chip-date">📅 {{ doc.pub_date|date:"M d, Y" }}</span>
+                <span class="chip chip-words">📝 {{ doc.raw_text|wordcount }} words</span>
+                {% if doc.is_indexed %}<span class="chip chip-indexed">✅ Indexed</span>{% endif %}
+                {% if readability %}
+                <span class="chip chip-read">
+                    📖 {{ readability.level }}
+                </span>
+                {% endif %}
+            </div>
+
+            <!-- External URL -->
+            {% if doc.url %}
+            <a href="{{ doc.url }}" target="_blank" rel="noopener" class="doc-url">
+                🔗 {{ doc.url|truncatechars:80 }}
+            </a>
+            {% endif %}
+
+            <!-- AI SUMMARY -->
+            {% if doc.summary %}
+            <div class="summary-box">
+                <div class="label">🤖 AI Summary</div>
+                <p>{{ doc.summary }}</p>
+            </div>
+            {% endif %}
+
+            <!-- KEY CONCEPTS -->
+            {% if concepts %}
+            <div style="margin-bottom:18px">
+                <div style="font-size:12px;font-weight:600;color:#70757a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">🏷️ Key Concepts</div>
+                <div class="concepts-row">
+                    {% for concept in concepts %}
+                    <a href="{% url 'search:search' %}?q={{ concept|urlencode }}" class="concept-tag">{{ concept }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- FULL TEXT -->
+            <div style="font-size:12px;font-weight:600;color:#70757a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">📄 Full Text</div>
+            <div class="doc-body" id="docBody">{{ doc.raw_text }}</div>
+
+            <!-- Admin actions -->
+            {% if user.is_authenticated and user.is_staff %}
+            <div class="admin-actions">
+                <a href="{% url 'search:upload' %}"
+                   style="font-size:13px;color:#1a56db;text-decoration:none;padding:8px 14px;border:1px solid #dadce0;border-radius:6px;">
+                    ➕ Add Document
+                </a>
+                <form method="post" action="{% url 'search:delete' doc.id %}"
+                      onsubmit="return confirm('Delete this document permanently?')">
+                    {% csrf_token %}
+                    <button type="submit"
+                            style="font-size:13px;color:#c5221f;background:#fce8e6;border:1px solid #f5c6c5;padding:8px 14px;border-radius:6px;cursor:pointer;">
+                        🗑️ Delete
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
     </div>
 
-    <!-- Admin actions -->
-    {% if user.is_authenticated and user.is_staff %}
-    <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <a href="{% url 'search:upload' %}"
-           style="font-size:14px;color:#1a73e8;text-decoration:none;padding:8px 16px;border:1px solid #dadce0;border-radius:6px;">
-            ➕ Add Another Document
-        </a>
-        <form method="post" action="{% url 'search:delete' doc.id %}"
-              onsubmit="return confirm('Delete this document?')">
-            {% csrf_token %}
-            <button type="submit"
-                    style="font-size:14px;color:#c5221f;background:#fce8e6;border:1px solid #f5c6c5;padding:8px 16px;border-radius:6px;cursor:pointer;">
-                🗑️ Delete This Document
-            </button>
-        </form>
-    </div>
-    {% endif %}
+    <!-- RIGHT: Sidebar -->
+    <aside class="sidebar">
+
+        <!-- Document Stats -->
+        <div class="sidebar-card">
+            <h3>📊 Document Info</h3>
+            <div class="sidebar-stat"><span class="lbl">Words</span><span class="val">{{ doc.raw_text|wordcount }}</span></div>
+            <div class="sidebar-stat"><span class="lbl">Language</span><span class="val">{{ doc.get_language_display }}</span></div>
+            <div class="sidebar-stat"><span class="lbl">Type</span><span class="val">{{ doc.get_doc_type_display }}</span></div>
+            <div class="sidebar-stat"><span class="lbl">Added</span><span class="val">{{ doc.created_at|date:"M d, Y" }}</span></div>
+            <div class="sidebar-stat"><span class="lbl">Indexed</span><span class="val">{% if doc.is_indexed %}✅ Yes{% else %}⏳ No{% endif %}</span></div>
+        </div>
+
+        <!-- Readability -->
+        {% if readability %}
+        <div class="sidebar-card">
+            <h3>📖 Readability</h3>
+            <div style="font-size:24px;font-weight:500;color:{% if readability.level == 'Easy' %}#1a56db{% elif readability.level == 'Moderate' %}#b06000{% else %}#c5221f{% endif %};margin-bottom:6px">
+                {{ readability.score }}/100
+            </div>
+            <div class="readability-bar">
+                <div class="readability-fill fill-{% if readability.level == 'Easy' %}easy{% elif readability.level == 'Moderate' %}moderate{% else %}difficult{% endif %}"
+                     style="width:{{ readability.score }}%"></div>
+            </div>
+            <div style="font-size:13px;color:#70757a;margin-top:6px">{{ readability.level }} to read</div>
+            <div class="sidebar-stat" style="margin-top:10px"><span class="lbl">Sentences</span><span class="val">{{ readability.sentences }}</span></div>
+            <div class="sidebar-stat"><span class="lbl">Avg sentence</span><span class="val">{{ readability.avg_sentence_len }} words</span></div>
+        </div>
+        {% endif %}
+
+        <!-- Related Documents -->
+        {% if related_docs %}
+        <div class="sidebar-card">
+            <h3>🔗 Related Documents</h3>
+            {% for rel_id, rel_score, rel_title in related_docs %}
+            <div class="related-item">
+                <a href="{% url 'search:document' rel_id %}?q={{ query|urlencode }}">{{ rel_title|truncatechars:50 }}</a>
+                <div class="related-score">Similarity: {{ rel_score }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Search with concepts -->
+        {% if concepts %}
+        <div class="sidebar-card">
+            <h3>🔍 Search by Concept</h3>
+            <div style="display:flex;flex-direction:column;gap:6px">
+                {% for concept in concepts %}
+                <a href="{% url 'search:search' %}?q={{ concept|urlencode }}"
+                   style="font-size:13px;color:#1a56db;text-decoration:none;padding:6px 10px;background:#f8f9fa;border-radius:6px;display:block">
+                    🔍 {{ concept }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+    </aside>
 
 </div>
 
-<!-- FOOTER -->
 <footer>
     <div class="footer-links">
         <a href="{% url 'search:index' %}">← Home</a>
-        <a href="{% url 'search:search' %}?q={{ query|urlencode }}">← Results</a>
+        {% if query %}<a href="{% url 'search:search' %}?q={{ query|urlencode }}">← Results</a>{% endif %}
         {% if user.is_authenticated and user.is_staff %}
         <a href="{% url 'search:documents' %}">All Documents</a>
-        <a href="/admin/">Admin Panel</a>
+        <a href="{% url 'search:crawl' %}">Web Crawler</a>
         {% endif %}
     </div>
 </footer>

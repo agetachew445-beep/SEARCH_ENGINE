@@ -8,6 +8,7 @@ urlpatterns = [
     path('search/',               views.search_view,     name='search'),
     path('document/<int:doc_id>/',views.document_detail, name='document'),
     path('upload/',               views.upload_view,     name='upload'),
+    path('crawl/',                views.crawl_view,      name='crawl'),
     path('documents/',            views.documents_view,  name='documents'),
     path('delete/<int:doc_id>/',  views.delete_document, name='delete'),
     path('stats/',                views.stats_view,      name='stats'),

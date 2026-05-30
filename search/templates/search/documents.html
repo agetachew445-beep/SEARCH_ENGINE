@@ -16,22 +16,22 @@
             position:sticky; top:0; z-index:100;
         }
         .logo-mini { font-size:26px; font-weight:400; text-decoration:none; }
-        .logo-mini span:nth-child(1){color:#4285F4}
-        .logo-mini span:nth-child(2){color:#EA4335}
-        .logo-mini span:nth-child(3){color:#FBBC05}
-        .logo-mini span:nth-child(4){color:#4285F4}
-        .logo-mini span:nth-child(5){color:#34A853}
-        .logo-mini span:nth-child(6){color:#EA4335}
-        .logo-mini span:nth-child(7){color:#4285F4}
-        .logo-mini span:nth-child(8){color:#FBBC05}
+        .logo-mini span:nth-child(1){color:#1a56db}
+        .logo-mini span:nth-child(2){color:#1a56db}
+        .logo-mini span:nth-child(3){color:#1a56db}
+        .logo-mini span:nth-child(4){color:#1a56db}
+        .logo-mini span:nth-child(5){color:#1a56db}
+        .logo-mini span:nth-child(6){color:#1a56db}
+        .logo-mini span:nth-child(7){color:#1a56db}
+        .logo-mini span:nth-child(8){color:#1a56db}
         .header-nav { display:flex; gap:12px; margin-left:auto; flex-wrap:wrap; }
         .header-nav a {
-            font-size:14px; color:#1a73e8; text-decoration:none;
+            font-size:14px; color:#1a56db; text-decoration:none;
             padding:8px 14px; border-radius:4px; border:1px solid #dadce0;
             transition:background .15s;
         }
         .header-nav a:hover { background:#e8f0fe; }
-        .header-nav a.active { background:#1a73e8; color:#fff; border-color:#1a73e8; }
+        .header-nav a.active { background:#1a56db; color:#fff; border-color:#1a56db; }
 
         /* MAIN */
         .main { max-width:960px; margin:40px auto; padding:0 24px 60px; }
@@ -48,7 +48,7 @@
             background:#fff; border:1px solid #dadce0; border-radius:8px;
             padding:12px 20px; text-align:center; min-width:110px;
         }
-        .stat-chip .num { font-size:22px; font-weight:500; color:#1a73e8; }
+        .stat-chip .num { font-size:22px; font-weight:500; color:#1a56db; }
         .stat-chip .lbl { font-size:12px; color:#70757a; margin-top:2px; }
 
         /* MESSAGES */
@@ -56,7 +56,7 @@
             padding:14px 18px; border-radius:8px; margin-bottom:20px;
             font-size:14px; display:flex; align-items:center; gap:10px;
         }
-        .alert-success { background:#e6f4ea; color:#137333; border:1px solid #ceead6; }
+        .alert-success { background:#e8f0fe; color:#1a56db; border:1px solid #c5d9f7; }
         .alert-error   { background:#fce8e6; color:#c5221f; border:1px solid #f5c6c5; }
 
         /* SEARCH BAR */
@@ -67,7 +67,7 @@
             flex:1; min-width:200px; padding:9px 14px;
             border:1px solid #dadce0; border-radius:6px; font-size:14px;
         }
-        .filter-input:focus { outline:none; border-color:#1a73e8; }
+        .filter-input:focus { outline:none; border-color:#1a56db; }
         .filter-select {
             padding:9px 14px; border:1px solid #dadce0; border-radius:6px;
             font-size:14px; background:#fff; cursor:pointer;
@@ -91,20 +91,20 @@
         tr:last-child td { border-bottom:none; }
         tr:hover td { background:#f8f9fa; }
 
-        .doc-title { font-weight:500; color:#1a0dab; margin-bottom:4px; }
+        .doc-title { font-weight:500; color:#1a56db; margin-bottom:4px; }
         .doc-snippet { font-size:13px; color:#70757a; line-height:1.5; }
 
         .lang-badge {
             display:inline-block; padding:2px 8px; border-radius:10px;
             font-size:12px; font-weight:500;
         }
-        .lang-english   { background:#e8f0fe; color:#1a73e8; }
-        .lang-amharic   { background:#fce8e6; color:#c5221f; }
-        .lang-tigrinya  { background:#e6f4ea; color:#137333; }
-        .lang-afan_oromo{ background:#fef7e0; color:#b06000; }
-        .lang-mixed     { background:#f3e8fd; color:#7b1fa2; }
+        .lang-english   { background:#e8f0fe; color:#1a56db; }
+        .lang-amharic   { background:#e8f0fe; color:#1a56db; }
+        .lang-tigrinya  { background:#e8f0fe; color:#1a56db; }
+        .lang-afan_oromo{ background:#e8f0fe; color:#1a56db; }
+        .lang-mixed     { background:#e8f0fe; color:#1a56db; }
 
-        .indexed-yes { color:#137333; font-size:13px; }
+        .indexed-yes { color:#1a56db; font-size:13px; }
         .indexed-no  { color:#c5221f; font-size:13px; }
 
         .btn-delete {
@@ -123,12 +123,12 @@
         .empty-state p { font-size:14px; margin-bottom:20px; }
 
         .btn-primary {
-            background:#1a73e8; color:#fff; border:none;
+            background:#1a56db; color:#fff; border:none;
             padding:10px 22px; border-radius:6px; font-size:14px;
             cursor:pointer; text-decoration:none; display:inline-block;
             font-weight:500; transition:background .15s;
         }
-        .btn-primary:hover { background:#1765cc; }
+        .btn-primary:hover { background:#1446b8; }
 
         /* FOOTER */
         footer {
@@ -150,6 +150,7 @@
     <nav class="header-nav">
         <a href="{% url 'search:index' %}">🔍 Search</a>
         <a href="{% url 'search:upload' %}">➕ Add Document</a>
+        <a href="{% url 'search:crawl' %}">🌐 Crawl URL</a>
         <a href="{% url 'search:documents' %}" class="active">📄 All Documents</a>
         <a href="/admin/">⚙️ Admin Panel</a>
         <a href="{% url 'search:logout' %}" style="background:#fce8e6;color:#c5221f;border-color:#f5c6c5;">

@@ -13,13 +13,15 @@ from collections import defaultdict
 from typing import Dict, List
 
 from .models import Document, IndexEntry
-from .preprocessing import TextPreprocessor
+from .preprocessing import TextPreprocessor, ExtractiveSummarizer, ConceptExtractor
 
 
 class InvertedIndexBuilder:
 
     def __init__(self):
         self.preprocessor = TextPreprocessor()
+        self.summarizer   = ExtractiveSummarizer()
+        self.concept_ext  = ConceptExtractor()
 
     # ─────────────────────────────────────────
     # BUILD
@@ -52,11 +54,20 @@ class InvertedIndexBuilder:
             tokens = self.preprocessor.preprocess(doc.raw_text, apply_stemming=True)
             doc.processed_text = ' '.join(tokens)
 
+            # Generate summary and concepts
+            if not doc.summary:
+                doc.summary = self.summarizer.summarize(
+                    doc.raw_text, num_sentences=3, language=doc.language
+                )
+            concepts = self.concept_ext.extract_concepts(doc.raw_text, top_k=8)
+            doc.set_concepts_list(concepts)
+
             for pos, term in enumerate(tokens):
                 index_data[term][doc.id].append(pos)
 
             doc.is_indexed = True
-            doc.save(update_fields=['processed_text', 'is_indexed', 'updated_at'])
+            doc.save(update_fields=['processed_text', 'is_indexed',
+                                    'summary', 'concepts', 'updated_at'])
 
         # ── pass 2: compute IDF + persist ──
         total_docs = Document.objects.filter(is_indexed=True).count()

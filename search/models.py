@@ -34,6 +34,8 @@ class Document(models.Model):
     title          = models.CharField(max_length=500)
     raw_text       = models.TextField(help_text="Original document text")
     processed_text = models.TextField(blank=True, help_text="Preprocessed / tokenised text")
+    summary        = models.TextField(blank=True, help_text="Auto-generated extractive summary")
+    concepts       = models.TextField(blank=True, default='[]', help_text="JSON list of key concepts")
     url            = models.URLField(blank=True, null=True)
     pub_date       = models.DateTimeField(default=timezone.now)
     doc_type       = models.CharField(max_length=10, choices=DOCTYPE_CHOICES, default='txt')
@@ -55,6 +57,15 @@ class Document(models.Model):
 
     def word_count(self):
         return len(self.raw_text.split())
+
+    def get_concepts_list(self):
+        try:
+            return json.loads(self.concepts)
+        except (json.JSONDecodeError, TypeError):
+            return []
+
+    def set_concepts_list(self, concepts):
+        self.concepts = json.dumps(concepts)
 
 
 # ─────────────────────────────────────────────

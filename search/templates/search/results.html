@@ -46,14 +46,14 @@
             text-decoration: none;
             flex-shrink: 0;
         }
-        .logo-mini span:nth-child(1) { color: #4285F4; }
-        .logo-mini span:nth-child(2) { color: #EA4335; }
-        .logo-mini span:nth-child(3) { color: #FBBC05; }
-        .logo-mini span:nth-child(4) { color: #4285F4; }
-        .logo-mini span:nth-child(5) { color: #34A853; }
-        .logo-mini span:nth-child(6) { color: #EA4335; }
-        .logo-mini span:nth-child(7) { color: #4285F4; }
-        .logo-mini span:nth-child(8) { color: #FBBC05; }
+        .logo-mini span:nth-child(1) { color: #1a56db; }
+        .logo-mini span:nth-child(2) { color: #1a56db; }
+        .logo-mini span:nth-child(3) { color: #1a56db; }
+        .logo-mini span:nth-child(4) { color: #1a56db; }
+        .logo-mini span:nth-child(5) { color: #1a56db; }
+        .logo-mini span:nth-child(6) { color: #1a56db; }
+        .logo-mini span:nth-child(7) { color: #1a56db; }
+        .logo-mini span:nth-child(8) { color: #1a56db; }
 
         /* Search bar in header */
         .header-search-wrap {
@@ -92,7 +92,7 @@
             background: none;
             border: none;
             cursor: pointer;
-            color: #4285F4;
+            color: #1a56db;
             padding: 4px 8px;
             border-left: 1px solid #dfe1e5;
             margin-left: 8px;
@@ -122,8 +122,8 @@
         .tab:hover { color: #202124; }
 
         .tab.active {
-            color: #1a73e8;
-            border-bottom-color: #1a73e8;
+            color: #1a56db;
+            border-bottom-color: #1a56db;
         }
 
         /* ── BODY LAYOUT ── */
@@ -170,7 +170,7 @@
             align-items: center;
             justify-content: center;
             font-size: 10px;
-            color: #1a73e8;
+            color: #1a56db;
             flex-shrink: 0;
         }
 
@@ -187,7 +187,7 @@
         .result-title {
             font-size: 20px;
             font-weight: 400;
-            color: #1a0dab;
+            color: #1a56db;
             line-height: 1.3;
             cursor: pointer;
             margin-bottom: 4px;
@@ -225,7 +225,7 @@
             align-items: center;
             gap: 4px;
             background: #e8f0fe;
-            color: #1a73e8;
+            color: #1a56db;
             font-size: 12px;
             padding: 2px 8px;
             border-radius: 10px;
@@ -286,7 +286,7 @@
             border-radius: 4px;
             background: #fff;
             font-size: 14px;
-            color: #1a73e8;
+            color: #1a56db;
             cursor: pointer;
             text-align: left;
             margin-bottom: 6px;
@@ -296,7 +296,7 @@
         .model-btn:hover { background: #f8f9fa; }
         .model-btn.active-model {
             background: #e8f0fe;
-            border-color: #1a73e8;
+            border-color: #1a56db;
             font-weight: 500;
         }
 
@@ -345,7 +345,7 @@
             background: none;
             font-size: 14px;
             cursor: pointer;
-            color: #1a73e8;
+            color: #1a56db;
             font-weight: 500;
         }
 
@@ -415,22 +415,22 @@
         {% if user.is_authenticated and user.is_staff %}
         <div style="display:flex;gap:8px;margin-left:auto;align-items:center;">
             <a href="{% url 'search:upload' %}"
-               style="font-size:13px;color:#1a73e8;text-decoration:none;padding:6px 12px;border:1px solid #dadce0;border-radius:4px;">
+               style="font-size:13px;color:#1a56db;text-decoration:none;padding:6px 12px;border:1px solid #dadce0;border-radius:4px;">
                ➕ Add Doc
             </a>
             <a href="{% url 'search:documents' %}"
-               style="font-size:13px;color:#1a73e8;text-decoration:none;padding:6px 12px;border:1px solid #dadce0;border-radius:4px;">
+               style="font-size:13px;color:#1a56db;text-decoration:none;padding:6px 12px;border:1px solid #dadce0;border-radius:4px;">
                📄 Docs
             </a>
             <a href="{% url 'search:logout' %}"
-               style="font-size:13px;color:#fff;background:#1a73e8;text-decoration:none;padding:6px 12px;border-radius:4px;">
+               style="font-size:13px;color:#fff;background:#1a56db;text-decoration:none;padding:6px 12px;border-radius:4px;">
                Sign Out
             </a>
         </div>
         {% else %}
         <div style="margin-left:auto;">
             <a href="{% url 'search:login' %}"
-               style="font-size:13px;color:#1a73e8;text-decoration:none;padding:6px 14px;border:1px solid #dadce0;border-radius:4px;">
+               style="font-size:13px;color:#1a56db;text-decoration:none;padding:6px 14px;border:1px solid #dadce0;border-radius:4px;">
                🔐 Admin Login
             </a>
         </div>
@@ -457,10 +457,10 @@
         <!-- Language switcher -->
         <div style="margin-left:auto;display:flex;align-items:center;gap:6px;padding:0 10px 10px;">
             <span style="font-size:12px;color:#70757a;" id="res-lang-label">Language:</span>
-            <a onclick="setResLang('amharic')"    id="res-link-amharic"    style="font-size:12px;color:#1a73e8;cursor:pointer;padding:2px 6px;border-radius:3px;" class="res-lang-link">አማርኛ</a>
-            <a onclick="setResLang('tigrinya')"   id="res-link-tigrinya"   style="font-size:12px;color:#1a73e8;cursor:pointer;padding:2px 6px;border-radius:3px;" class="res-lang-link">ትግርኛ</a>
-            <a onclick="setResLang('afan_oromo')" id="res-link-afan_oromo" style="font-size:12px;color:#1a73e8;cursor:pointer;padding:2px 6px;border-radius:3px;" class="res-lang-link">Oromoo</a>
-            <a onclick="setResLang('english')"    id="res-link-english"    style="font-size:12px;color:#1a73e8;cursor:pointer;padding:2px 6px;border-radius:3px;" class="res-lang-link">English</a>
+            <a onclick="setResLang('amharic')"    id="res-link-amharic"    style="font-size:12px;color:#1a56db;cursor:pointer;padding:2px 6px;border-radius:3px;" class="res-lang-link">አማርኛ</a>
+            <a onclick="setResLang('tigrinya')"   id="res-link-tigrinya"   style="font-size:12px;color:#1a56db;cursor:pointer;padding:2px 6px;border-radius:3px;" class="res-lang-link">ትግርኛ</a>
+            <a onclick="setResLang('afan_oromo')" id="res-link-afan_oromo" style="font-size:12px;color:#1a56db;cursor:pointer;padding:2px 6px;border-radius:3px;" class="res-lang-link">Oromoo</a>
+            <a onclick="setResLang('english')"    id="res-link-english"    style="font-size:12px;color:#1a56db;cursor:pointer;padding:2px 6px;border-radius:3px;" class="res-lang-link">English</a>
         </div>
     </div>
 </header>
@@ -472,7 +472,7 @@
     <div class="results-col">
 
         {% if query %}
-        <!-- Stats — text filled by JS translation -->
+        <!-- Stats bar -->
         <div class="stats-bar" id="stats-bar">
             <span id="stats-prefix">About</span>
             <strong>{{ total_results }}</strong>
@@ -482,6 +482,17 @@
             <span id="stats-using">Ranked by</span>
             <strong id="stats-model">{% if ranking_model == 'cosine' %}Vector Space Model{% else %}BM25{% endif %}</strong>
         </div>
+
+        <!-- Query expansion hint -->
+        {% if expanded_terms %}
+        <div style="font-size:13px;color:#70757a;margin-bottom:16px;padding:8px 12px;background:#e8f0fe;border-radius:6px;border-left:3px solid #1a56db;">
+            🔍 Also searched for:
+            {% for term in expanded_terms %}
+            <a href="{% url 'search:search' %}?q={{ term|urlencode }}&model={{ ranking_model }}"
+               style="color:#1a56db;text-decoration:none;margin-left:4px;">{{ term }}</a>{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
         {% endif %}
 
         {% if results %}
@@ -513,6 +524,25 @@
                 <!-- Snippet -->
                 <div class="result-snippet">{{ result.snippet }}</div>
 
+                <!-- AI Summary (if available and different from snippet) -->
+                {% if result.summary %}
+                <div style="font-size:13px;color:#3c4043;margin-top:6px;padding:6px 10px;background:#f8f9fa;border-left:3px solid #1a56db;border-radius:0 4px 4px 0;">
+                    <span style="font-size:11px;color:#1a56db;font-weight:600;text-transform:uppercase;letter-spacing:.3px;">AI Summary · </span>{{ result.summary }}
+                </div>
+                {% endif %}
+
+                <!-- Concepts -->
+                {% if result.concepts %}
+                <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:5px">
+                    {% for concept in result.concepts %}
+                    <a href="{% url 'search:search' %}?q={{ concept|urlencode }}&model={{ ranking_model }}"
+                       style="font-size:11px;background:#f1f3f4;color:#3c4043;padding:2px 8px;border-radius:10px;text-decoration:none;">
+                        {{ concept }}
+                    </a>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
                 <!-- Meta pills -->
                 <div class="result-meta">
                     <span class="score-pill">
@@ -529,7 +559,7 @@
             <!-- Pagination bar -->
             <div class="pagination">
                 <span class="page-logo">
-                    <span style="color:#4285F4">I</span><span style="color:#EA4335">R</span><span style="color:#FBBC05">S</span>
+                    <span style="color:#1a56db">I</span><span style="color:#1a56db">R</span><span style="color:#1a56db">S</span>
                 </span>
                 <button class="page-btn current">1</button>
                 <button class="page-btn">2</button>
@@ -769,7 +799,7 @@
         if (active) {
             active.style.fontWeight = 'bold';
             active.style.background = '#e8f0fe';
-            active.style.borderBottom = '2px solid #1a73e8';
+            active.style.borderBottom = '2px solid #1a56db';
         }
     }
 

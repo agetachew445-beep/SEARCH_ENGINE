@@ -13,9 +13,9 @@ SECRET_KEY = os.environ.get(
     'django-insecure-ir-search-engine-development-key-change-in-production'
 )
 
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['*']   # Railway / PythonAnywhere / localhost
+ALLOWED_HOSTS = ['*', '.railway.app', '.up.railway.app', 'irsearch.up.railway.app', '127.0.0.1', 'localhost']
 
 
 # Application definition
