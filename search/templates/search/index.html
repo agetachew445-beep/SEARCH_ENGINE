@@ -157,6 +157,41 @@
         }
         .footer-links a:hover { text-decoration: underline; }
 
+        /* ── GROUP MEMBERS ── */
+        .group-members {
+            border-top: 1px solid #e4e4e4;
+            margin-top: 12px;
+            padding-top: 14px;
+            text-align: center;
+        }
+        .group-members-title {
+            font-size: 11px;
+            color: #9aa0a6;
+            margin-bottom: 10px;
+            font-weight: 600;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+        }
+        .group-members-list {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .member-chip {
+            font-size: 12px;
+            color: #3c4043;
+            background: #e8f0fe;
+            padding: 5px 14px;
+            border-radius: 14px;
+            border: 1px solid #c5d9f7;
+            white-space: nowrap;
+        }
+        .member-chip strong {
+            color: #1a56db;
+            margin-left: 4px;
+        }
+
         /* ── LANGUAGE BANNER ── */
         .lang-banner {
             display: none;
@@ -285,16 +320,16 @@
         </div>
 
         <!-- Group Members -->
-        <div style="border-top:1px solid #e4e4e4;margin-top:12px;padding-top:12px;text-align:center;">
-            <div style="font-size:12px;color:#70757a;margin-bottom:8px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;">
+        <div class="group-members">
+            <div class="group-members-title">
                 Information Storage &amp; Retrieval — Group Members
             </div>
-            <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:16px;">
-                <span style="font-size:12px;color:#3c4043;background:#e8f0fe;padding:4px 12px;border-radius:12px;">Shambel Belay &nbsp;·&nbsp; <strong>1756/16</strong></span>
-                <span style="font-size:12px;color:#3c4043;background:#e8f0fe;padding:4px 12px;border-radius:12px;">Abel Getachew &nbsp;·&nbsp; <strong>4123/16</strong></span>
-                <span style="font-size:12px;color:#3c4043;background:#e8f0fe;padding:4px 12px;border-radius:12px;">Yordanos Alemu &nbsp;·&nbsp; <strong>2137/16</strong></span>
-                <span style="font-size:12px;color:#3c4043;background:#e8f0fe;padding:4px 12px;border-radius:12px;">Mastewal Amare &nbsp;·&nbsp; <strong>1242/16</strong></span>
-                <span style="font-size:12px;color:#3c4043;background:#e8f0fe;padding:4px 12px;border-radius:12px;">Bethelhem Mekete &nbsp;·&nbsp; <strong>0425/16</strong></span>
+            <div class="group-members-list">
+                <span class="member-chip">Shambel Belay <strong>1756/16</strong></span>
+                <span class="member-chip">Abel Getachew <strong>4123/16</strong></span>
+                <span class="member-chip">Yordanos Alemu <strong>2137/16</strong></span>
+                <span class="member-chip">Mastewal Amare <strong>1242/16</strong></span>
+                <span class="member-chip">Bethelhem Mekete <strong>0425/16</strong></span>
             </div>
         </div>
     </footer>
